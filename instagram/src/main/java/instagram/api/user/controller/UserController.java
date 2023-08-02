@@ -1,5 +1,6 @@
 package instagram.api.user.controller;
 
+import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
 import instagram.api.user.dto.response.LoginResponse;
@@ -7,6 +8,7 @@ import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -42,6 +44,11 @@ public class UserController {
     @DeleteMapping("/unfollow/{userId}")
     public void unfollow(@PathVariable Long userId, @AuthenticationPrincipal LoginUser loginUser) {
         userService.unfollow(userId, loginUser.getUser().getId());
+    }
+
+    @GetMapping("/followings")
+    public FollowingResponse getFollowings(@AuthenticationPrincipal LoginUser loginUser, Pageable pageable) {
+        return userService.getFollowings(loginUser.getUser().getId(), pageable);
     }
 
 }

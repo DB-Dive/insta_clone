@@ -1,7 +1,9 @@
 package instagram.api.user.service;
 
+import instagram.api.user.dto.UserData;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
@@ -10,6 +12,8 @@ import instagram.entity.user.User;
 import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -22,6 +26,7 @@ import static instagram.entity.user.UserEnum.USER;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class UserService {
 
     private final UserRepository userRepository;
@@ -30,6 +35,7 @@ public class UserService {
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
 
+    @Transactional
     public void signup(SignupRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalStateException("존재하는 이메일 입니다.");
@@ -45,6 +51,7 @@ public class UserService {
         userRepository.save(user);
     }
 
+    @Transactional
     public LoginResponse login(LoginRequestDto request) {
         UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()); // 인증정보
         Authentication authentication = authenticationManager.authenticate(authRequest); // 인증
@@ -55,6 +62,7 @@ public class UserService {
         return new LoginResponse(loginUser, accessToken);
     }
 
+    @Transactional
     public void follow(Long toUserId, Long fromUserId) {
 
         User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
@@ -69,7 +77,11 @@ public class UserService {
 
         User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
         User fromUser = userRepository.findById(fromUserId).orElseThrow();
-
         followRepository.deleteByToUserAndFromUser(toUser, fromUser);
+    }
+
+    public FollowingResponse getFollowings(Long userId, Pageable pageable) {
+        PageImpl<UserData> followingUsers = userRepository.findFollowingUsers(userId, pageable);
+        return new FollowingResponse(followingUsers);
     }
 }
