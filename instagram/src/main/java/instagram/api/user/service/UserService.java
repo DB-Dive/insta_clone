@@ -1,14 +1,17 @@
 package instagram.api.user.service;
 
+import instagram.api.user.dto.FeedData;
 import instagram.api.user.dto.UserData;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
 import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.response.LoginResponse;
+import instagram.api.user.dto.response.ProfileResponse;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
 import instagram.entity.user.Follow;
 import instagram.entity.user.User;
+import instagram.repository.feed.FeedRepository;
 import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -34,6 +37,7 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final FeedRepository feedRepository;
 
     @Transactional
     public void signup(SignupRequestDto request) {
@@ -83,5 +87,14 @@ public class UserService {
     public FollowingResponse getFollowings(Long userId, Pageable pageable) {
         PageImpl<UserData> followingUsers = userRepository.findFollowingUsers(userId, pageable);
         return new FollowingResponse(followingUsers);
+    }
+
+    public ProfileResponse getProfile(String username, Pageable pageable) {
+        ProfileResponse response = userRepository.findByUsernameProfile(username);
+        PageImpl<FeedData> feeds =  feedRepository.findFeedInfo(username, pageable);
+        response.setFeeds(feeds.getContent());
+        response.setTotalPage(feeds.getTotalPages());
+        response.setCurrentPage(feeds.getNumber());
+        return response;
     }
 }

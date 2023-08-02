@@ -7,8 +7,6 @@ import lombok.NoArgsConstructor;
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
-import static instagram.entity.user.UserEnum.USER;
-
 @Entity
 @Getter
 @NoArgsConstructor
@@ -17,9 +15,11 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    @Column(unique = true)
+    private String email;
+    @Column(unique = true)
     private String username;
     private String nickname;
-    private String email;
     private String password;
     private String description;
     private String profileImgUrl;
