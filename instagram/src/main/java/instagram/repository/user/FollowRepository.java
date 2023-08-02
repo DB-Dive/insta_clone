@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface FollowRepository extends JpaRepository<Follow, Long> {
     void deleteByToUserAndFromUser(User toUser, User fromUser);
+
 }
