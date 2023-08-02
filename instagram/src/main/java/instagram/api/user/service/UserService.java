@@ -1,8 +1,8 @@
-package instagram.user.service;
+package instagram.api.user.service;
 
-import instagram.user.dto.request.SignupRequestDto;
-import instagram.user.entity.User;
-import instagram.user.repository.UserRepository;
+import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.entity.user.User;
+import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -27,4 +27,5 @@ public class UserService {
                 .build();
         userRepository.save(user);
     }
+
 }

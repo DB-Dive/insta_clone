@@ -1,4 +1,4 @@
-package instagram.entity;
+package instagram.entity.feed;
 
 import lombok.Getter;
 

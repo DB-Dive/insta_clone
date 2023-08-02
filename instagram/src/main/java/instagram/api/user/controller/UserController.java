@@ -1,7 +1,7 @@
-package instagram.user.controller;
+package instagram.api.user.controller;
 
-import instagram.user.dto.request.SignupRequestDto;
-import instagram.user.service.UserService;
+import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.api.user.service.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

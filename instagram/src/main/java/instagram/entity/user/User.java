@@ -1,4 +1,4 @@
-package instagram.user.entity;
+package instagram.entity.user;
 
 import lombok.Builder;
 import lombok.Getter;

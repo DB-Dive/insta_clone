@@ -1,8 +1,9 @@
 package instagram.user.service;
 
-import instagram.user.dto.request.SignupRequestDto;
-import instagram.user.entity.User;
-import instagram.user.repository.UserRepository;
+import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.api.user.service.UserService;
+import instagram.entity.user.User;
+import instagram.repository.user.UserRepository;
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.DisplayName;

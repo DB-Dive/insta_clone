@@ -1,6 +1,6 @@
-package instagram.entity;
+package instagram.entity.feed;
 
-import instagram.user.entity.User;
+import instagram.entity.user.User;
 import lombok.Getter;
 
 import javax.persistence.*;

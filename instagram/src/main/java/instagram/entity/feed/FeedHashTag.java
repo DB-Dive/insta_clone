@@ -1,4 +1,4 @@
-package instagram.entity;
+package instagram.entity.feed;
 
 import lombok.Getter;
 
@@ -6,15 +6,17 @@ import javax.persistence.*;
 
 @Entity
 @Getter
-public class FeedImage {
+public class FeedHashTag {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    private String feedImgUrl;
-
     @ManyToOne
     @JoinColumn(name = "FEED_ID")
     private Feed feed;
+
+    @ManyToOne
+    @JoinColumn(name = "HASHTAG_ID")
+    private HashTag hashtag;
 }

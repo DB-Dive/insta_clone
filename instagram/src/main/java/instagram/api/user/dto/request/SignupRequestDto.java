@@ -1,4 +1,4 @@
-package instagram.user.dto.request;
+package instagram.api.user.dto.request;
 
 import lombok.Getter;
 import lombok.Setter;

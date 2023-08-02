@@ -1,6 +1,6 @@
-package instagram.user.repository;
+package instagram.repository.user;
 
-import instagram.user.entity.User;
+import instagram.entity.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
