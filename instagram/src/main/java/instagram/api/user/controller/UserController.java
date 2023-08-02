@@ -5,7 +5,6 @@ import instagram.api.user.dto.request.SignupRequestDto;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
-import instagram.repository.feed.FeedGoodRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -18,7 +17,6 @@ import javax.validation.Valid;
 @RequestMapping("/api/user")
 @Slf4j
 public class UserController {
-    private final FeedGoodRepository feedGoodRepository;
     private final UserService userService;
 
     @PostMapping("/signup")
@@ -34,6 +32,16 @@ public class UserController {
     @GetMapping("/logout")
     public void logout(@AuthenticationPrincipal LoginUser loginUser) {
         log.info(loginUser.getUser().getEmail() + " 로그아웃 요청");
+    }
+
+    @PostMapping("/follow/{userId}")
+    public void follow(@PathVariable Long userId, @AuthenticationPrincipal LoginUser loginUser) {
+        userService.follow(userId, loginUser.getUser().getId());
+    }
+
+    @DeleteMapping("/unfollow/{userId}")
+    public void unfollow(@PathVariable Long userId, @AuthenticationPrincipal LoginUser loginUser) {
+        userService.unfollow(userId, loginUser.getUser().getId());
     }
 
 }

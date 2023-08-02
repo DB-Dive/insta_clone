@@ -5,8 +5,9 @@ import instagram.api.user.dto.request.SignupRequestDto;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
+import instagram.entity.user.Follow;
 import instagram.entity.user.User;
-import instagram.entity.user.UserEnum;
+import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,6 +16,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import static instagram.entity.user.UserEnum.USER;
 
@@ -23,6 +25,7 @@ import static instagram.entity.user.UserEnum.USER;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final FollowRepository followRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
@@ -31,7 +34,7 @@ public class UserService {
         if (userRepository.existsByEmail(request.getEmail())) {
             throw new IllegalStateException("존재하는 이메일 입니다.");
         }
-        
+
         User user = User.builder()
                 .email(request.getEmail())
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
@@ -50,5 +53,23 @@ public class UserService {
         LoginUser loginUser = (LoginUser) authentication.getPrincipal();
         String accessToken = jwtUtils.generateAccessTokenFromLoginUser(loginUser);
         return new LoginResponse(loginUser, accessToken);
+    }
+
+    public void follow(Long toUserId, Long fromUserId) {
+
+        User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
+        User fromUser = userRepository.findById(fromUserId).orElseThrow();
+
+        Follow follow = new Follow(fromUser, toUser);
+        followRepository.save(follow);
+    }
+
+    @Transactional
+    public void unfollow(Long toUserId, Long fromUserId) {
+
+        User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
+        User fromUser = userRepository.findById(fromUserId).orElseThrow();
+
+        followRepository.deleteByToUserAndFromUser(toUser, fromUser);
     }
 }
