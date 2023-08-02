@@ -4,11 +4,10 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
 import java.time.LocalDateTime;
+
+import static instagram.entity.user.UserEnum.USER;
 
 @Entity
 @Getter
@@ -24,18 +23,21 @@ public class User {
     private String password;
     private String description;
     private String profileImgUrl;
-    private String roles;
+
+    @Enumerated(EnumType.STRING)
+    private UserEnum role;
     private LocalDateTime createdAt;
 
     @Builder
-    public User(String username, String nickname, String email, String password, String description) {
+    public User(Long id, String username, String nickname, String email, String password, UserEnum role) {
+        this.id = id;
         this.username = username;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
         this.description = "";
         this.profileImgUrl = "https://img1.daumcdn.net/thumb/R1280x0/?scode=mtistory2&fname=https%3A%2F%2Ft1.daumcdn.net%2Fcfile%2Ftistory%2F243FE450575F82662D";
-        this.roles = "USER";
+        this.role = role;
         this.createdAt = LocalDateTime.now();
     }
 
