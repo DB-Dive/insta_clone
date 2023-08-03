@@ -1,11 +1,15 @@
 package instagram.entity.feed;
 
 import instagram.entity.user.User;
+
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.AccessLevel;
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Getter
@@ -15,12 +19,11 @@ public class Feed {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 
@@ -29,5 +32,4 @@ public class Feed {
         this.content = content;
         this.createdAt = LocalDateTime.now();
         this.user = user;
-    }
 }
