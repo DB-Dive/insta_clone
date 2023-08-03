@@ -9,6 +9,7 @@ import instagram.api.user.dto.response.FollowerResponse;
 import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.api.user.dto.response.ProfileResponse;
+import instagram.common.GlobalException;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
 import instagram.entity.user.Follow;
@@ -18,7 +19,6 @@ import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -54,7 +54,10 @@ public class UserService {
     @Transactional
     public void signup(SignupRequestDto request) {
         if (userRepository.existsByEmail(request.getEmail())) {
-            throw new IllegalStateException("존재하는 이메일 입니다.");
+            throw new GlobalException("존재하는 이메일 입니다.");
+        }
+        if (userRepository.existsByUsername(request.getUsername())) {
+            throw new GlobalException("존재하는 아이디 입니다.");
         }
 
         User user = User.builder()
@@ -79,25 +82,24 @@ public class UserService {
     }
 
     @Transactional
-    public void follow(Long toUserId, Long fromUserId) {
-
-        User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
-        User fromUser = userRepository.findById(fromUserId).orElseThrow();
-
-        Follow follow = new Follow(fromUser, toUser);
+    public void follow(Long toUserId, User me) {
+        User toUser = userRepository.findById(toUserId).orElseThrow(
+                () -> new GlobalException("존재하지 않는 회원입니다.")
+        );
+        Follow follow = new Follow(me, toUser);
         followRepository.save(follow);
     }
 
     @Transactional
-    public void unfollow(Long toUserId, Long fromUserId) {
-
-        User toUser = userRepository.findById(toUserId).orElseThrow();//null일때 던져버리기
-        User fromUser = userRepository.findById(fromUserId).orElseThrow();
-        followRepository.deleteByToUserAndFromUser(toUser, fromUser);
+    public void unfollow(Long toUserId, User me) {
+        User toUser = userRepository.findById(toUserId).orElseThrow(
+                () -> new GlobalException("존재하지 않는 회원입니다.")
+        );
+        followRepository.deleteByToUserAndFromUser(toUser, me);
     }
 
-    public FollowingResponse getFollowings(Long userId, Pageable pageable) {
-        PageImpl<UserData> followingUsers = userRepository.findFollowingUsers(userId, pageable);
+    public FollowingResponse getFollowings(String username, Pageable pageable) {
+        PageImpl<UserData> followingUsers = userRepository.findFollowingUsersByUsername(username, pageable);
         return new FollowingResponse(followingUsers);
     }
 
@@ -115,7 +117,6 @@ public class UserService {
         Long count = em.createQuery("select count(f) from Follow f where f.toUser.username=:username", Long.class)
                 .setParameter("username", username)
                 .getSingleResult();
-        System.out.println("count = " + count);
         PageImpl<UserDto> userDtos = new PageImpl<>(userDtoList, pageable,count);
         int totalPages = userDtos.getTotalPages();
         int currentPage = userDtos.getNumber();
@@ -123,6 +124,18 @@ public class UserService {
 
     }
 
+    public ProfileResponse getProfile(String username, Pageable pageable) {
+        if (!userRepository.existsByUsername(username)) {
+            throw new GlobalException("존재하지 않는 계정입니다.");
+        }
+        ProfileResponse response = userRepository.findByUsernameProfile(username);
+        PageImpl<FeedData> feeds =  feedRepository.findFeedInfo(username, pageable);
+        response.setFeeds(feeds.getContent());
+        response.setTotalPage(feeds.getTotalPages());
+        response.setCurrentPage(feeds.getNumber());
+        return response;
+
+    }
 
     private List<UserDto> userDtoListMapping(List<User> userList) {
         List<UserDto> userDtoList = new ArrayList<>();
@@ -135,14 +148,5 @@ public class UserService {
             userDtoList.add(userDto);
         }
         return userDtoList;
-    }
-    public ProfileResponse getProfile(String username, Pageable pageable) {
-        ProfileResponse response = userRepository.findByUsernameProfile(username);
-        PageImpl<FeedData> feeds =  feedRepository.findFeedInfo(username, pageable);
-        response.setFeeds(feeds.getContent());
-        response.setTotalPage(feeds.getTotalPages());
-        response.setCurrentPage(feeds.getNumber());
-        return response;
-
     }
 }
