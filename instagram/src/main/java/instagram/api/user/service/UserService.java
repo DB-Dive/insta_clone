@@ -1,8 +1,10 @@
 package instagram.api.user.service;
 
 import instagram.api.user.dto.UserData;
+import instagram.api.user.dto.UserDto;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.api.user.dto.response.FollowerResponse;
 import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.config.auth.LoginUser;
@@ -13,6 +15,7 @@ import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -21,6 +24,12 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import static instagram.entity.user.UserEnum.USER;
 
@@ -34,6 +43,8 @@ public class UserService {
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final AuthenticationManager authenticationManager;
     private final JwtUtils jwtUtils;
+    private final EntityManager em;
+
 
     @Transactional
     public void signup(SignupRequestDto request) {
@@ -83,5 +94,41 @@ public class UserService {
     public FollowingResponse getFollowings(Long userId, Pageable pageable) {
         PageImpl<UserData> followingUsers = userRepository.findFollowingUsers(userId, pageable);
         return new FollowingResponse(followingUsers);
+    }
+
+    public FollowerResponse getFollowers(String username, Pageable pageable) {
+
+        // toUser의 타입이 User이기 때문에 f.toUser로 받을 수 있다.
+        TypedQuery<User> result = em.createQuery("select f.fromUser from Follow f where f.toUser.username=:username", User.class);
+        result.setParameter("username", username);
+
+        result.setFirstResult((int) pageable.getOffset());
+        result.setMaxResults(pageable.getPageSize());
+
+        List<User> userList = result.getResultList();
+        List<UserDto> userDtoList = userDtoListMapping(userList);
+        Long count = em.createQuery("select count(f) from Follow f where f.toUser.username=:username", Long.class)
+                .setParameter("username", username)
+                .getSingleResult();
+        System.out.println("count = " + count);
+        PageImpl<UserDto> userDtos = new PageImpl<>(userDtoList, pageable,count);
+        int totalPages = userDtos.getTotalPages();
+        int currentPage = userDtos.getNumber();
+        return new FollowerResponse(userDtoList, totalPages, currentPage);
+
+    }
+
+
+    private List<UserDto> userDtoListMapping(List<User> userList) {
+        List<UserDto> userDtoList = new ArrayList<>();
+        for (User user : userList) {
+            UserDto userDto = new UserDto();
+            userDto.setId(user.getId());
+            userDto.setUserProfileImage(user.getProfileImgUrl());
+            userDto.setUsername(user.getUsername());
+            userDto.setNickname(user.getNickname());
+            userDtoList.add(userDto);
+        }
+        return userDtoList;
     }
 }

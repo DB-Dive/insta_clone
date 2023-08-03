@@ -1,5 +1,6 @@
 package instagram.api.user.controller;
 
+import instagram.api.user.dto.response.FollowerResponse;
 import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
@@ -49,6 +50,10 @@ public class UserController {
     @GetMapping("/followings")
     public FollowingResponse getFollowings(@AuthenticationPrincipal LoginUser loginUser, Pageable pageable) {
         return userService.getFollowings(loginUser.getUser().getId(), pageable);
+    }
+    @GetMapping("/{username}/followers")
+    public FollowerResponse getFollowers(@PathVariable String username, Pageable pageable) {
+        return userService.getFollowers(username, pageable);
     }
 
 }
