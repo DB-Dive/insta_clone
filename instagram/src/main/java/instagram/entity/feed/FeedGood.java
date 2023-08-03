@@ -5,7 +5,6 @@ import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
 import javax.persistence.*;
 import java.util.Objects;
 
@@ -25,11 +24,6 @@ public class FeedGood {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FEED_ID")
     private Feed feed;
-
-//    public void add(Feed feed){
-//        this.feed = feed;
-//        feed.getFeedGoods().add(this);
-//    }
 
     @Builder
     public FeedGood(User user, Feed feed) {
