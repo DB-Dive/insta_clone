@@ -1,10 +1,8 @@
 package instagram.api.user.dto;
 
 import lombok.Getter;
-import lombok.ToString;
 
 @Getter
-@ToString
 public class UserData {
     private Long userId;
     private String userProfileImage;
