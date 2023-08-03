@@ -5,6 +5,7 @@ import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
 import instagram.api.user.dto.response.LoginResponse;
+import instagram.api.user.dto.response.ProfileResponse;
 import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +55,11 @@ public class UserController {
     @GetMapping("/{username}/followers")
     public FollowerResponse getFollowers(@PathVariable String username, Pageable pageable) {
         return userService.getFollowers(username, pageable);
+    }
+
+    @GetMapping("/{username}")
+    public ProfileResponse getProfile(@PathVariable String username, Pageable pageable) {
+        return userService.getProfile(username, pageable);
     }
 
 }
