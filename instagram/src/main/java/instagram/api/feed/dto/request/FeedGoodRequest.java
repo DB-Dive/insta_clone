@@ -1,4 +1,4 @@
-package instagram.api.feed.request;
+package instagram.api.feed.dto.request;
 
 import instagram.entity.feed.FeedGood;
 import lombok.AllArgsConstructor;

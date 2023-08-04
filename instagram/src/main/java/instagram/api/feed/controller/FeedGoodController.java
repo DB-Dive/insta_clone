@@ -1,16 +1,11 @@
 package instagram.api.feed.controller;
 
-import instagram.api.feed.request.FeedGoodRequest;
-import instagram.api.feed.response.FeedGoodResponse;
-import instagram.api.feed.response.GoodUserResponse;
+import instagram.api.feed.dto.request.FeedGoodRequest;
+import instagram.api.feed.dto.response.FeedGoodResponse;
+import instagram.api.feed.dto.response.GoodUserResponse;
 import instagram.api.feed.service.FeedGoodService;
-import instagram.entity.user.User;
-import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequiredArgsConstructor

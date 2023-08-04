@@ -1,7 +1,7 @@
 package instagram.api.feed.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import instagram.api.feed.request.FeedGoodRequest;
+import instagram.api.feed.dto.request.FeedGoodRequest;
 import instagram.api.feed.service.FeedGoodService;
 import instagram.entity.feed.Feed;
 import instagram.entity.user.User;

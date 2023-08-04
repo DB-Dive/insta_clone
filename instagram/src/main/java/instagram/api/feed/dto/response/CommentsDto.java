@@ -1,5 +1,6 @@
-package instagram.api.feed.dto;
+package instagram.api.feed.dto.response;
 
+import instagram.api.feed.dto.CommentDto;
 import lombok.Builder;
 import lombok.Getter;
 

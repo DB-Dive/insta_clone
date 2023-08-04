@@ -1,6 +1,6 @@
-package instagram.api.feed.dto;
+package instagram.api.feed.dto.response;
 
-import instagram.entity.feed.FeedImage;
+import instagram.api.feed.dto.FeedImageDto;
 import lombok.Builder;
 import lombok.Getter;
 

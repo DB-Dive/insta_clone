@@ -1,6 +1,6 @@
 package instagram.api.feed.controller;
 
-import instagram.api.feed.dto.BookmarkDto;
+import instagram.api.feed.dto.request.BookmarkDto;
 import instagram.api.feed.dto.BookmarkFeedDto;
 import instagram.api.feed.service.FeedBookmarkService;
 import org.springframework.beans.factory.annotation.Autowired;

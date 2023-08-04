@@ -1,10 +1,9 @@
 package instagram.api.feed.service;
 
-import instagram.api.feed.response.HashTagResponse;
+import instagram.api.feed.dto.response.HashTagResponse;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedHashTag;
 import instagram.entity.feed.HashTag;
-import instagram.repository.comment.CommentRepository;
 import instagram.repository.feed.FeedHashTagRepository;
 import instagram.repository.feed.FeedRepository;
 import instagram.repository.feed.HashTagRepository;

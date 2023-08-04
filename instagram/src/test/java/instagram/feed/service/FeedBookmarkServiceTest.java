@@ -1,6 +1,6 @@
 package instagram.feed.service;
 
-import instagram.api.feed.dto.BookmarkDto;
+import instagram.api.feed.dto.request.BookmarkDto;
 import instagram.api.feed.dto.BookmarkFeedDto;
 import instagram.api.feed.service.FeedBookmarkService;
 import instagram.entity.comment.Comment;

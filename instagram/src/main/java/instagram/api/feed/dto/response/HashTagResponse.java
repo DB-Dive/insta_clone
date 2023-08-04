@@ -1,4 +1,4 @@
-package instagram.api.feed.response;
+package instagram.api.feed.dto.response;
 
 import lombok.Builder;
 import lombok.Getter;

@@ -1,12 +1,14 @@
 package instagram.api.feed.service;
 
 import instagram.api.feed.dto.CommentDto;
-import instagram.api.feed.dto.CommentsDto;
+import instagram.api.feed.dto.response.CommentsDto;
 import instagram.api.feed.dto.FeedImageDto;
-import instagram.api.feed.dto.SelectViewResponse;
+import instagram.api.feed.dto.response.SelectViewResponse;
 
 import instagram.entity.comment.Comment;
+import instagram.entity.feed.Bookmark;
 import instagram.entity.feed.Feed;
+import instagram.entity.feed.FeedGood;
 import instagram.entity.feed.FeedImage;
 import instagram.entity.user.User;
 import instagram.repository.comment.CommentRepository;
@@ -14,9 +16,7 @@ import instagram.repository.feed.BookmarkRepository;
 import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedImageRepository;
 import instagram.repository.feed.FeedRepository;
-import instagram.repository.feed.HashTagRepository;
 import instagram.repository.user.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -27,8 +27,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -47,11 +45,6 @@ public class FeedService {
 
     @PersistenceContext
     EntityManager em;
-
-    @Transactional
-    public void fullView(int page, int size, Long userId) {
-
-    }
 
     @Transactional
     public SelectViewResponse selectView(Long feedId, int cmtPage, int cmtSize, Long userId) {

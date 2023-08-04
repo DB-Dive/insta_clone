@@ -1,6 +1,6 @@
 package instagram.api.feed.service;
 
-import instagram.api.feed.response.GoodUserResponse;
+import instagram.api.feed.dto.response.GoodUserResponse;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
 import instagram.entity.user.User;

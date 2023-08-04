@@ -1,6 +1,6 @@
 package instagram.api.feed.controller;
 
-import instagram.api.feed.response.HashTagResponse;
+import instagram.api.feed.dto.response.HashTagResponse;
 import instagram.api.feed.service.FeedHashTagService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

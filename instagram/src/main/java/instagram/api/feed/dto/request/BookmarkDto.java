@@ -1,4 +1,4 @@
-package instagram.api.feed.dto;
+package instagram.api.feed.dto.request;
 
 import lombok.*;
 
