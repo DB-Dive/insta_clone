@@ -1,8 +1,5 @@
-package instagram.api.feed.controller;
+package instagram.api.feed.service;
 
-import instagram.api.feed.dto.SelectViewResponse;
-import instagram.api.feed.service.FeedBookmarkService;
-import instagram.api.feed.service.FeedService;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.Bookmark;
 import instagram.entity.feed.Feed;
@@ -15,14 +12,18 @@ import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedImageRepository;
 import instagram.repository.feed.FeedRepository;
 import instagram.repository.user.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDateTime;
 
-@RestController
-@RequestMapping(value = "/api/feed")
-public class FeedController {
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class FeedServiceTest {
     private final int userNum = 5;
     private final int feedNum = 10;
     private final int bookmarkNum = 20;
@@ -30,6 +31,8 @@ public class FeedController {
     private final int commentNum = 50;
     private final int feedImageNum = 30;
 
+    @Autowired
+    private FeedService feedService;
     @Autowired
     private FeedBookmarkService feedBookmarkService;
     @Autowired
@@ -44,22 +47,9 @@ public class FeedController {
     private CommentRepository commentRepository;
     @Autowired
     private FeedImageRepository feedImageRepository;
-//    -----
-    @Autowired
-    private FeedService feedService;
 
-    @GetMapping
-    public String fullView(@RequestParam int page, @RequestParam int size, @RequestParam Long userId) {
-        feedService.fullView(page, size, userId);
-        return "full view";
-    }
-    @GetMapping(value = "/{feedId}")
-    public SelectViewResponse selectView(@PathVariable Long feedId, @RequestParam int cmtPage, @RequestParam int cmtSize, @RequestParam Long userId) {
-        return feedService.selectView(feedId, cmtPage, cmtSize, userId);
-    }
-
-    @GetMapping(value = "/init")
-    public String init() {
+    @BeforeEach
+    public void testInit() {
         for(int i=1; i<=userNum; i++) {
             userRepository.save(User.builder()
                     .username("username" + i)
@@ -122,7 +112,24 @@ public class FeedController {
                     .feed(feedRepository.findById((long)(Math.random()*feedNum+1)).get())
                     .build());
         }
+    }
+    @Test
+    @DisplayName("select view")
+    public void selectViewTest() throws Exception {
+        //given
 
-        return "init";
+        //when
+        feedService.selectView(1L, 0, 3, 1L);
+
+        //then
+    }
+
+    @Test
+    public void test1() throws Exception {
+        //given
+
+        //when
+
+        //then
     }
 }

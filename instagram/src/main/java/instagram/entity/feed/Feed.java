@@ -32,4 +32,5 @@ public class Feed {
         this.content = content;
         this.createdAt = LocalDateTime.now();
         this.user = user;
+    }
 }
