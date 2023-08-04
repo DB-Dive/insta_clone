@@ -1,8 +1,7 @@
 package instagram.api.feed.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import instagram.api.feed.dto.request.FeedGoodRequest;
 import instagram.api.feed.service.FeedGoodService;
+import instagram.config.auth.LoginUser;
 import instagram.entity.feed.Feed;
 import instagram.entity.user.User;
 import instagram.repository.feed.FeedGoodRepository;
@@ -14,10 +13,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -48,47 +48,36 @@ class FeedGoodControllerTest {
         userRepository.save(user2);
         userRepository.save(user3);
 
-        feedGoodService.like(1L,1L);
-        feedGoodService.like(1L,2L);
-        feedGoodService.like(1L,3L);
+        LoginUser loginUser = new LoginUser(user);
+        LoginUser loginUser2 = new LoginUser(user2);
+        LoginUser loginUser3 = new LoginUser(user3);
+
+        feedGoodService.like(1L,loginUser);
+        feedGoodService.like(1L,loginUser2);
+        feedGoodService.like(1L,loginUser3);
+
+        Authentication authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
+        SecurityContextHolder.getContext().setAuthentication(authentication);
     }
 
     @Test
     @DisplayName("like 요청 시 응답으로 좋아요 개수를 반환해준다.")
     void likeTest() throws Exception {
-        FeedGoodRequest request = new FeedGoodRequest(2L, 1L);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(post("/api/feed/good")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(json)
-        )
+        mockMvc.perform(post("/api/feed/good/1"))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.goodCnt").value(1))
+                .andExpect(jsonPath("$.goodCnt").value(4))
                 .andDo(print());
 
-        assertThat(feedGoodRepository.count()).isEqualTo(4);
     }
 
     @Test
     @DisplayName("dislike 응답으로 좋아요 개수를 반환해준다.")
     void dislikeTest() throws Exception {
-        FeedGoodRequest request = new FeedGoodRequest(1L, 1L);
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json = objectMapper.writeValueAsString(request);
-
-        mockMvc.perform(delete("/api/feed/good")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(json)
-                )
+        mockMvc.perform(delete("/api/feed/good/1"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.goodCnt").value(2))
                 .andDo(print());
 
-        assertThat(feedGoodRepository.count()).isEqualTo(2);
     }
 
     @Test

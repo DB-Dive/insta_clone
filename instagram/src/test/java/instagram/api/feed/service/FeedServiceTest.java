@@ -27,7 +27,6 @@ class FeedServiceTest {
 
     @Autowired FeedRepository feedRepository;
     @Autowired HashTagRepository hashTagRepository;
-    @Autowired FeedHashTagService feedHashTagService;
     @Autowired FeedImageRepository feedImageRepository;
     @Autowired FeedService feedService;
     @Autowired CommentRepository commentRepository;

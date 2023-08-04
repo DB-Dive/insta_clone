@@ -1,5 +1,6 @@
 package instagram.api.feed.service;
 
+import instagram.config.auth.LoginUser;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
 import instagram.entity.user.User;
@@ -47,19 +48,25 @@ class FeedGoodServiceTest {
         userRepository.save(user4);
         userRepository.save(user5);
 
+        LoginUser loginUser1 = new LoginUser(user1);
+        LoginUser loginUser2 = new LoginUser(user2);
+        LoginUser loginUser3 = new LoginUser(user3);
+        LoginUser loginUser4 = new LoginUser(user4);
+        LoginUser loginUser5 = new LoginUser(user5);
+
         feedRepository.save(feed1);
         feedRepository.save(feed2);
         feedRepository.save(feed3);
         feedRepository.save(feed4);
         feedRepository.save(feed5);
 
-        feedGoodService.like(feed1.getId(), user1.getId());
-        feedGoodService.like(feed2.getId(), user1.getId());
-        feedGoodService.like(feed2.getId(), user2.getId());
-        feedGoodService.like(feed1.getId(), user2.getId());
-        feedGoodService.like(feed3.getId(), user3.getId());
-        feedGoodService.like(feed4.getId(), user4.getId());
-        feedGoodService.like(feed5.getId(), user5.getId());
+        feedGoodService.like(feed1.getId(), loginUser1);
+        feedGoodService.like(feed2.getId(), loginUser1);
+        feedGoodService.like(feed2.getId(), loginUser3);
+        feedGoodService.like(feed1.getId(), loginUser2);
+        feedGoodService.like(feed3.getId(), loginUser5);
+        feedGoodService.like(feed4.getId(), loginUser1);
+        feedGoodService.like(feed5.getId(), loginUser2);
     }
 
     @Test
@@ -71,9 +78,11 @@ class FeedGoodServiceTest {
         userRepository.save(user);
         feedRepository.save(feed);
 
+        LoginUser loginUser = new LoginUser(user);
+
         Long before = feedGoodRepository.count();
 
-        feedGoodService.like(user.getId(), feed.getId());
+        feedGoodService.like(user.getId(), loginUser);
 
         assertThat(feedGoodRepository.count()).isEqualTo(before+1);
     }
@@ -107,7 +116,9 @@ class FeedGoodServiceTest {
         Feed feed = feedRepository.findById(1L).get();
         User user = userRepository.findById(2L).get();
 
-        feedGoodService.dislike(feed.getId(), user.getId());
+        LoginUser loginUser = new LoginUser(user);
+
+        feedGoodService.dislike(feed.getId(), loginUser);
 
         Long afterCnt = feedGoodRepository.count();
 
@@ -125,13 +136,5 @@ class FeedGoodServiceTest {
 
         assertThat(find.size()).isEqualTo(2);
         assertThat(find).contains(userOne);
-    }
-
-    @Test
-    @Rollback(false)
-    void test5(){
-        Feed feed = feedRepository.findById(1L).get();
-        System.out.println("feed = " + feed);
-        feedRepository.delete(feed);
     }
 }
