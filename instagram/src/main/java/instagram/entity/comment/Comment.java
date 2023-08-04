@@ -3,17 +3,18 @@ package instagram.entity.comment;
 import instagram.entity.feed.Feed;
 import instagram.entity.user.User;
 import instagram.entity.feed.Feed;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
+@Setter
 public class Comment {
 
     @Id
@@ -23,10 +24,11 @@ public class Comment {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FEED_ID")
     private Feed feed;
-    @ManyToOne
+
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "USER_ID")
     private User user;
 
@@ -43,6 +45,13 @@ public class Comment {
     public void updateComment(String content) {
         this.content = content;
     }
+
+    @Builder
+    public Comment(String content, LocalDateTime modifiedAt, Feed feed, User user) {
+        this.content = content;
+        this.createdAt = LocalDateTime.now();
+        this.modifiedAt = modifiedAt;
+        this.feed = feed;
+        this.user = user;
+    }
 }
-
-
