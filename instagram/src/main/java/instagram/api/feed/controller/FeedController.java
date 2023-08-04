@@ -25,4 +25,9 @@ public class FeedController {
     public void edit(@PathVariable Long feedId, @RequestBody FeedEditRequest request){
         feedService.edit(feedId, request.getTags(), request.getContent());
     }
+
+    @DeleteMapping("/{feedId}")
+    public void delete(@PathVariable Long feedId){
+        feedService.delete(feedId);
+    }
 }
