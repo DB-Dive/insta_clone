@@ -4,10 +4,9 @@ import instagram.api.feed.dto.CommentDto;
 import instagram.api.feed.dto.CommentsDto;
 import instagram.api.feed.dto.FeedImageDto;
 import instagram.api.feed.dto.SelectViewResponse;
+
 import instagram.entity.comment.Comment;
-import instagram.entity.feed.Bookmark;
 import instagram.entity.feed.Feed;
-import instagram.entity.feed.FeedGood;
 import instagram.entity.feed.FeedImage;
 import instagram.entity.user.User;
 import instagram.repository.comment.CommentRepository;
@@ -15,6 +14,7 @@ import instagram.repository.feed.BookmarkRepository;
 import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedImageRepository;
 import instagram.repository.feed.FeedRepository;
+import instagram.repository.feed.HashTagRepository;
 import instagram.repository.user.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -26,23 +26,24 @@ import org.springframework.transaction.annotation.Transactional;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
+@RequiredArgsConstructor
 public class FeedService {
-    @Autowired
-    private FeedRepository feedRepository;
-    @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private FeedImageRepository feedImageRepository;
-    @Autowired
-    private CommentRepository commentRepository;
-    @Autowired
-    private FeedGoodRepository feedGoodRepository;
-    @Autowired
-    private BookmarkRepository bookmarkRepository;
+    
+    private final FeedRepository feedRepository;
+    private final UserRepository userRepository;
+    private final FeedImageRepository feedImageRepository;
+    private final CommentRepository commentRepository;
+    private final FeedGoodRepository feedGoodRepository;
+    private final BookmarkRepository bookmarkRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -112,5 +113,15 @@ public class FeedService {
                 .goodStatus(goodStatus)
                 .bookmarkStatus(bookmarkStatus)
                 .build();
+    }
+
+
+    public String getFirstImgUrl(Long feedId){
+        List<FeedImage> feedImages = feedImageRepository.findAllByFeedId(feedId);
+        return feedImages.get(0).getFeedImgUrl();
+    }
+
+    public int getCommentCount(Long feedId){
+        return commentRepository.countByFeedId(feedId);
     }
 }

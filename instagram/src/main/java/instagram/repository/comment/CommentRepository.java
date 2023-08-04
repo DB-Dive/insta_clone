@@ -9,4 +9,8 @@ import java.util.List;
 
 public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByFeedId(Long feedId, Pageable pageable);
+
+    List<Comment> findAllByFeedId(Long feedId);
+
+    int countByFeedId(Long feedId);
 }

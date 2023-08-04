@@ -9,4 +9,6 @@ import java.util.Optional;
 
 public interface FeedImageRepository extends JpaRepository<FeedImage, Long> {
     List<FeedImage> findByFeedId(Long feedId);
+  
+    List<FeedImage> findAllByFeedId(Long feedId);
 }

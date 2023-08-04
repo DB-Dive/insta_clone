@@ -1,5 +1,6 @@
 package instagram.entity.feed;
 
+import instagram.entity.comment.Comment;
 import instagram.entity.user.User;
 
 import lombok.Builder;

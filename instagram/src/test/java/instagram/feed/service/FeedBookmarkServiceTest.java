@@ -2,7 +2,7 @@ package instagram.feed.service;
 
 import instagram.api.feed.dto.BookmarkDto;
 import instagram.api.feed.dto.BookmarkFeedDto;
-import instagram.api.feed.service.FeedService;
+import instagram.api.feed.service.FeedBookmarkService;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.Bookmark;
 import instagram.entity.feed.Feed;
@@ -27,7 +27,7 @@ import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @SpringBootTest
-class FeedServiceTest {
+class FeedBookmarkServiceTest {
     private final int userNum = 5;
     private final int feedNum = 10;
     private final int bookmarkNum = 20;
@@ -36,7 +36,7 @@ class FeedServiceTest {
     private final int feedImageNum = 30;
 
     @Autowired
-    private FeedService feedService;
+    private FeedBookmarkService feedBookmarkService;
     @Autowired
     private UserRepository userRepository;
     @Autowired
@@ -123,7 +123,7 @@ class FeedServiceTest {
         BookmarkDto bookmarkDto = new BookmarkDto(4L, 1L);
 
         //when
-        feedService.bookmark(bookmarkDto);
+        feedBookmarkService.bookmark(bookmarkDto);
 
         //then
         Optional<Bookmark> findBookmark = bookmarkRepository.findByFeedIdAndUserId(4L, 1L);
@@ -135,10 +135,10 @@ class FeedServiceTest {
     public void bookmarkCancelTest() throws Exception {
         //given
         BookmarkDto bookmarkDto = new BookmarkDto(4L, 1L);
-        feedService.bookmark(bookmarkDto);
+        feedBookmarkService.bookmark(bookmarkDto);
 
         //when
-        feedService.bookmarkCancel(bookmarkDto);
+        feedBookmarkService.bookmarkCancel(bookmarkDto);
 
         //then
         Optional<Bookmark> findBookmark = bookmarkRepository.findByFeedIdAndUserId(4L, 1L);
@@ -151,7 +151,7 @@ class FeedServiceTest {
         //given
 
         //when
-        List<BookmarkFeedDto> bookmarkFeedDtos = feedService.bookmarkView(0, 20, 3L);
+        List<BookmarkFeedDto> bookmarkFeedDtos = feedBookmarkService.bookmarkView(0, 20, 3L);
         //then
         for (BookmarkFeedDto bookmarkFeedDto : bookmarkFeedDtos) {
             System.out.println("**********************************************");
