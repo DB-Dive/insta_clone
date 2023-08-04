@@ -21,7 +21,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
     private final JPAQueryFactory jpaQueryFactory;
 
     @Override
-    public PageImpl<UserData> findFollowingUsers(Long userId, Pageable pageable) {
+    public PageImpl<UserData> findFollowingUsersByUsername(String username, Pageable pageable) {
         List<UserData> userData = jpaQueryFactory.select(Projections.constructor(UserData.class,
                         user.id,
                         user.profileImgUrl,
@@ -30,7 +30,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 ))
                 .from(follow)
                 .join(follow.toUser, user)
-                .where(follow.fromUser.id.eq(userId))
+                .where(follow.fromUser.username.eq(username))
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
                 .fetch();
@@ -40,7 +40,7 @@ public class UserRepositoryImpl implements UserRepositoryCustom {
                 )
                 .from(follow)
                 .join(follow.toUser, user)
-                .where(follow.fromUser.id.eq(userId))
+                .where(follow.fromUser.username.eq(username))
                 .fetchOne();
 
         return new PageImpl<UserData>(userData, pageable, count);

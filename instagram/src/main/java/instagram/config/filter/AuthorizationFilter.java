@@ -21,12 +21,14 @@ public class AuthorizationFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         String token = jwtUtils.parseJwtToken(request);
-        if (token != null && jwtUtils.validationJwtToken(token)) {
+
+        if (token != null && jwtUtils.validationJwtToken(token, response)) {
             //토큰 성공
             LoginUser loginUser = jwtUtils.getLoginUser(token);
             Authentication authentication = new UsernamePasswordAuthenticationToken(loginUser, null, loginUser.getAuthorities());
             SecurityContextHolder.getContext().setAuthentication(authentication);
         }
+
         filterChain.doFilter(request, response); // 다른 filter로 가기 위한 dofilter
 
     }

@@ -40,17 +40,17 @@ public class UserController {
 
     @PostMapping("/follow/{userId}")
     public void follow(@PathVariable Long userId, @AuthenticationPrincipal LoginUser loginUser) {
-        userService.follow(userId, loginUser.getUser().getId());
+        userService.follow(userId, loginUser.getUser());
     }
 
     @DeleteMapping("/unfollow/{userId}")
     public void unfollow(@PathVariable Long userId, @AuthenticationPrincipal LoginUser loginUser) {
-        userService.unfollow(userId, loginUser.getUser().getId());
+        userService.unfollow(userId, loginUser.getUser());
     }
 
-    @GetMapping("/followings")
-    public FollowingResponse getFollowings(@AuthenticationPrincipal LoginUser loginUser, Pageable pageable) {
-        return userService.getFollowings(loginUser.getUser().getId(), pageable);
+    @GetMapping("/{username}/followings")
+    public FollowingResponse getFollowings(@PathVariable String username, Pageable pageable) {
+        return userService.getFollowings(username, pageable);
     }
     @GetMapping("/{username}/followers")
     public FollowerResponse getFollowers(@PathVariable String username, Pageable pageable) {
