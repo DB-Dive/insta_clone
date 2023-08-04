@@ -25,7 +25,6 @@ public class FeedGood {
     @JoinColumn(name = "FEED_ID")
     private Feed feed;
 
-
     @Builder
     public FeedGood(User user, Feed feed) {
         this.user = user;

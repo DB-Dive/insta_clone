@@ -42,6 +42,7 @@ public class FeedGoodService {
         feedGoodRepository.delete(find);
     }
 
+    @Transactional(readOnly = true)
     public int countByFeedId(Long feedId){
         Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException());
         return feedGoodRepository.countByFeed(feed);

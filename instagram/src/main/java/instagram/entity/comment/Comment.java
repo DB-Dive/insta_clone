@@ -21,11 +21,10 @@ public class Comment {
     private String content;
     private LocalDateTime createdAt;
     private LocalDateTime modifiedAt;
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "FEED_ID")
     private Feed feed;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "USER_ID")
     private User user;
 
