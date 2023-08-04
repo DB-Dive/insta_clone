@@ -124,4 +124,17 @@ public class FeedService {
             hashTagRepository.save(hashTag);
         }
     }
+
+    public void delete(Long feedId) {
+        //해시태그
+        hashTagRepository.deleteAllByFeedId(feedId);
+        //댓글
+        commentRepository.deleteAllByFeedId(feedId);
+        //좋아요
+        feedGoodRepository.deleteAllByFeedId(feedId);
+        //피드 이미지
+        feedImageRepository.deleteAllByFeedId(feedId);
+        //게시물
+        feedRepository.deleteById(feedId);
+    }
 }
