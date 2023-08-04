@@ -35,8 +35,9 @@ public class SecurityConfig {
                 .formLogin().disable() // 폼태그 로그인 안한다.
                 .httpBasic().disable() // basic은 id와 password를 가져가기 때문에 노출된다.그래서 basic이 아닌 bearer를 사용한다.
                 .authorizeRequests(authorize -> authorize
-                        .antMatchers("/api/user/signup", "/api/user/login").permitAll() // 두가지는 허용
-                        .anyRequest().authenticated() // 나머지는 인증절차 필요
+                        .antMatchers("/**").permitAll() // 두가지는 허용
+//                        .antMatchers("/api/user/signup", "/api/user/login").permitAll() // 두가지는 허용
+//                        .anyRequest().authenticated() // 나머지는 인증절차 필요
                 )
                 .build();
     }
