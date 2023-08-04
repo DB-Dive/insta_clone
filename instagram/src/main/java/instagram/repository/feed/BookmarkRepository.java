@@ -23,4 +23,5 @@ public interface BookmarkRepository extends JpaRepository<Bookmark,Long> {
     @Query("SELECT f FROM Bookmark b JOIN b.feed f JOIN b.user u ON u.id = :userId ORDER BY b.id")
     Page<Feed> findFeedByUserId(@Param("userId") Long userId, Pageable pageable);
 
+    Optional<Bookmark> findByUserIdAndFeedId(Long userId, Long feedId);
 }
