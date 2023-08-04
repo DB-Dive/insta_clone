@@ -19,6 +19,8 @@ public class HashTag {
 
     private String tagname;
 
+    private Long feedId;
+
     public HashTag(String tagname) {
         this.tagname = tagname;
     }
