@@ -1,5 +1,6 @@
 package instagram.api.feed.dto.response;
 
+import instagram.api.feed.dto.TestDto;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -11,26 +12,10 @@ import java.util.List;
 public class HashTagResponse {
     private String tagname;
     private int feedCount;
-    private List<Res> feed = new ArrayList<>();
-
-    @Getter
-    public static class Res {
-        private Long id;
-        private String feedImage;
-        private int goodCnt;
-        private int commentCnt;
-
-        @Builder
-        public Res(Long id, String feedImage, int goodCnt, int commentCnt) {
-            this.id = id;
-            this.feedImage = feedImage;
-            this.goodCnt = goodCnt;
-            this.commentCnt = commentCnt;
-        }
-    }
+    private List<TestDto> feed;
 
     @Builder
-    public HashTagResponse(String tagname, int feedCount, List<Res> feed) {
+    public HashTagResponse(String tagname, int feedCount, List<TestDto> feed) {
         this.tagname = tagname;
         this.feedCount = feedCount;
         this.feed = feed;

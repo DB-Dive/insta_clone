@@ -1,6 +1,7 @@
 package instagram.repository.feed;
 
 import instagram.api.feed.service.FeedGoodService;
+import instagram.config.auth.LoginUser;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
 import instagram.entity.user.User;
@@ -28,7 +29,8 @@ class FeedGoodRepositoryTest {
         User user = new User();
         feedRepository.save(feed);
         userRepository.save(user);
-        feedGoodService.like(1L, 1L);
+        LoginUser loginUser = new LoginUser(user);
+        feedGoodService.like(1L, loginUser);
     }
     @Test
     @DisplayName("유저와 피드로 좋아요 찾기")
@@ -37,7 +39,10 @@ class FeedGoodRepositoryTest {
         User user = new User();
         feedRepository.save(feed);
         userRepository.save(user);
-        FeedGood save = feedGoodService.like(feed.getId(), user.getId());
+
+        LoginUser loginUser = new LoginUser(user);
+
+        FeedGood save = feedGoodService.like(feed.getId(), loginUser);
 
         Feed findFeed = feedRepository.findById(feed.getId()).get();
         User findUser = userRepository.findById(user.getId()).get();

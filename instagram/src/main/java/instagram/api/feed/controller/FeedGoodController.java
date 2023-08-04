@@ -1,10 +1,11 @@
 package instagram.api.feed.controller;
 
-import instagram.api.feed.dto.request.FeedGoodRequest;
 import instagram.api.feed.dto.response.FeedGoodResponse;
 import instagram.api.feed.dto.response.GoodUserResponse;
 import instagram.api.feed.service.FeedGoodService;
+import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -14,21 +15,17 @@ public class FeedGoodController {
 
     private final FeedGoodService feedGoodService;
 
-    @PostMapping("/good")
-//    public GoodResponse like(@AuthenticationPrincipal User user, @RequestBody Long feedId){
-    public FeedGoodResponse like(@RequestBody FeedGoodRequest request){
-        // TODO 유저 정보 받아와서 변경
-
-        feedGoodService.like(request.getFeedId(), request.getUserId());
-        return new FeedGoodResponse(feedGoodService.countByFeedId(request.getFeedId()));
+    @PostMapping("/good/{feedId}")
+    public FeedGoodResponse like(@PathVariable Long feedId, @AuthenticationPrincipal LoginUser loginUser){
+        System.out.println(loginUser.getUser().getId());
+        feedGoodService.like(feedId, loginUser);
+        return new FeedGoodResponse(feedGoodService.countByFeedId(feedId));
     }
 
-    @DeleteMapping("/good")
-    public FeedGoodResponse dislike(@RequestBody FeedGoodRequest request){
-        // TODO 유저 정보 받아와서 변경
-
-        feedGoodService.dislike(request.getFeedId(), request.getUserId());
-        return new FeedGoodResponse(feedGoodService.countByFeedId(request.getFeedId()));
+    @DeleteMapping("/good/{feedId}")
+    public FeedGoodResponse dislike(@PathVariable Long feedId, @AuthenticationPrincipal LoginUser loginUser){
+        feedGoodService.dislike(feedId, loginUser);
+        return new FeedGoodResponse(feedGoodService.countByFeedId(feedId));
     }
 
     @GetMapping("/{feedId}/good")

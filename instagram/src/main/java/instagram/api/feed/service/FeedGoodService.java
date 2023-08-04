@@ -1,6 +1,7 @@
 package instagram.api.feed.service;
 
 import instagram.api.feed.dto.response.GoodUserResponse;
+import instagram.config.auth.LoginUser;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
 import instagram.entity.user.User;
@@ -8,10 +9,12 @@ import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 
 @Service
 @RequiredArgsConstructor
@@ -22,22 +25,20 @@ public class FeedGoodService {
     private final UserRepository userRepository;
     private final FeedRepository feedRepository;
 
-    public FeedGood like(Long feedId, Long userId) {
-        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException());
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException());
+    public FeedGood like(Long feedId, LoginUser loginUser) {
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException());
         FeedGood feedGood = FeedGood.builder()
                 .feed(feed)
-                .user(user)
+                .user(loginUser.getUser())
                 .build();
-
         feedGoodRepository.save(feedGood);
+
         return feedGood;
     }
 
-    public void dislike(Long feedId, Long userId){
+    public void dislike(Long feedId, LoginUser loginUser){
         Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException());
-        User user = userRepository.findById(userId).orElseThrow(() -> new IllegalArgumentException());
-        FeedGood find = feedGoodRepository.findByFeedAndUser(feed, user);
+        FeedGood find = feedGoodRepository.findByFeedAndUser(feed, loginUser.getUser());
 
         feedGoodRepository.delete(find);
     }
