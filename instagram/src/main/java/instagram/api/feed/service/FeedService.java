@@ -6,16 +6,10 @@ import instagram.api.feed.dto.FeedImageDto;
 import instagram.api.feed.dto.response.SelectViewResponse;
 
 import instagram.entity.comment.Comment;
-import instagram.entity.feed.Bookmark;
-import instagram.entity.feed.Feed;
-import instagram.entity.feed.FeedGood;
-import instagram.entity.feed.FeedImage;
+import instagram.entity.feed.*;
 import instagram.entity.user.User;
 import instagram.repository.comment.CommentRepository;
-import instagram.repository.feed.BookmarkRepository;
-import instagram.repository.feed.FeedGoodRepository;
-import instagram.repository.feed.FeedImageRepository;
-import instagram.repository.feed.FeedRepository;
+import instagram.repository.feed.*;
 import instagram.repository.user.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -29,6 +23,7 @@ import java.util.ArrayList;
 import lombok.RequiredArgsConstructor;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.Optional;
 
 @Service
@@ -42,6 +37,7 @@ public class FeedService {
     private final CommentRepository commentRepository;
     private final FeedGoodRepository feedGoodRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final HashTagRepository hashTagRepository;
 
     @PersistenceContext
     EntityManager em;
@@ -116,5 +112,16 @@ public class FeedService {
 
     public int getCommentCount(Long feedId){
         return commentRepository.countByFeedId(feedId);
+    }
+
+    public void edit(Long feedId, List<String> tags, String content) {
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시물입니다."));
+
+        feed.update(content);
+        hashTagRepository.deleteAllByFeedId(feedId);
+        for (String tag : tags) {
+            HashTag hashTag = HashTag.builder().tagname(tag).feedId(feedId).build();
+            hashTagRepository.save(hashTag);
+        }
     }
 }
