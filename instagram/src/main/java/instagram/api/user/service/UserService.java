@@ -4,11 +4,9 @@ import instagram.api.user.dto.FeedData;
 import instagram.api.user.dto.UserData;
 import instagram.api.user.dto.UserDto;
 import instagram.api.user.dto.request.LoginRequestDto;
+import instagram.api.user.dto.request.ProfileEditRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
-import instagram.api.user.dto.response.FollowerResponse;
-import instagram.api.user.dto.response.FollowingResponse;
-import instagram.api.user.dto.response.LoginResponse;
-import instagram.api.user.dto.response.ProfileResponse;
+import instagram.api.user.dto.response.*;
 import instagram.common.GlobalException;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
@@ -135,6 +133,19 @@ public class UserService {
         response.setCurrentPage(feeds.getNumber());
         return response;
 
+    }
+    @Transactional
+    public void editProfile(LoginUser loginUser, ProfileEditRequestDto profileEditRequestDto) {
+
+        User user = userRepository.findById(loginUser.getUser().getId()).orElseThrow();
+
+        user.setUsername(profileEditRequestDto.getUsername());
+        user.setNickname(profileEditRequestDto.getNickname());
+        user.setProfileImgUrl(profileEditRequestDto.getUserProfileImage());
+        user.setDescription(profileEditRequestDto.getDescription());
+
+        userRepository.save(user);
+        System.out.println("user.getDescription() = " + user.getDescription());
     }
 
     private List<UserDto> userDtoListMapping(List<User> userList) {
