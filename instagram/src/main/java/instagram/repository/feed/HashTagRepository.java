@@ -2,9 +2,11 @@ package instagram.repository.feed;
 
 import instagram.api.feed.dto.TestDto;
 import instagram.api.feed.dto.response.HashTagResponse;
+import instagram.api.search.response.SearchTagResponse;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedImage;
 import instagram.entity.feed.HashTag;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -24,10 +26,10 @@ public interface HashTagRepository extends JpaRepository<HashTag, Long> {
 
     @Query(value =
             "select new instagram.api.feed.dto.TestDto" +
-                    "(f.id, (select i.feedImgUrl from FeedImage i where i.id in ("+"" +
-                    "select min(ii.id) from FeedImage ii where ii.feed = f)),"+
-                    " count(fg), count(c))" +
-                    " from Feed f left join HashTag h on f.id = h.feedId" +
+                    "(f.id, (select i.feedImgUrl from FeedImage i where i.id in (" + "" +
+                    "select min(ii.id) from FeedImage ii where ii.feed = f))," +
+                    " count(DISTINCT fg), count(DISTINCT c))" +
+                    " from Feed f join HashTag h on f.id = h.feedId" +
                     " left join FeedGood fg on fg.feed = f" +
                     " left join Comment c on c.feed = f" +
                     " where h.tagname = :tagname" +
@@ -46,4 +48,11 @@ public interface HashTagRepository extends JpaRepository<HashTag, Long> {
 
     @Query(value = "select h from HashTag h where h.feedId = :feedId")
     List<HashTag> findAllByFeedId(@Param("feedId") Long feedId);
+
+    @Query(value =
+            "select new instagram.api.search.response.SearchTagResponse" +
+                    "(t.tagname, count(t))" +
+                    " from HashTag t where t.tagname like %:tagname% group by t.tagname"
+    )
+    List<SearchTagResponse> findByKeyword(@Param("tagname") String keyword, Pageable pageable);
 }
