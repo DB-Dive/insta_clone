@@ -1,5 +1,6 @@
 package instagram.api.feed.service;
 
+import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.config.auth.LoginUser;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.Feed;
@@ -19,6 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.Arrays;
 import java.util.List;
@@ -94,7 +96,8 @@ class FeedServiceTest {
     @Test
     void test3(){
         List<String> hash = List.of("해 시", "태 그 ", "하", "록");
-        feedService.edit(1L, hash, "내용이 바꼈어용");
+        User user = userRepository.findById(1L).get();
+        feedService.edit(1L, hash, "내용이 바꼈어용", user);
         Feed feed = feedRepository.findById(1L).get();
 
         System.out.println(feed.getId());
@@ -118,7 +121,8 @@ class FeedServiceTest {
         //피드 이미지
         Long beforeImgCnt = feedImageRepository.countByFeedId(1L);
 
-        feedService.delete(1L);
+        User user = userRepository.findById(1L).get();
+        feedService.delete(1L, user);
 
         long afterFeedCount = feedRepository.count();
         //댓글

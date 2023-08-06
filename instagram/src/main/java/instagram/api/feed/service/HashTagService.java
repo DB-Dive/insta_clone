@@ -2,17 +2,14 @@ package instagram.api.feed.service;
 
 import instagram.api.feed.dto.TestDto;
 import instagram.api.feed.dto.response.HashTagResponse;
-import instagram.entity.feed.Feed;
 import instagram.repository.comment.CommentRepository;
 import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedImageRepository;
-import instagram.repository.feed.FeedRepository;
 import instagram.repository.feed.HashTagRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service

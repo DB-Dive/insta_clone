@@ -3,6 +3,7 @@ package instagram.repository.feed;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
 import instagram.entity.user.User;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -20,7 +21,7 @@ public interface FeedGoodRepository extends JpaRepository<FeedGood, Long> {
     FeedGood findByFeedAndUser(Feed feed, User user);
 
     @Query(value = "select g.user from FeedGood g where g.feed.id = :feedId")
-    List<User> findUserByFeedId(@Param("feedId") Long feedId);
+    List<User> findUserByFeedId(@Param("feedId") Long feedId, Pageable pageable);
 
     Long countByFeedId(Long feedId);
 
