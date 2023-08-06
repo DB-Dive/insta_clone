@@ -4,17 +4,16 @@ import instagram.api.feed.dto.response.GoodUserResponse;
 import instagram.config.auth.LoginUser;
 import instagram.entity.feed.Feed;
 import instagram.entity.feed.FeedGood;
-import instagram.entity.user.User;
 import instagram.repository.feed.FeedGoodRepository;
 import instagram.repository.feed.FeedRepository;
-import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.NoSuchElementException;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -22,11 +21,10 @@ import java.util.NoSuchElementException;
 public class FeedGoodService {
 
     private final FeedGoodRepository feedGoodRepository;
-    private final UserRepository userRepository;
     private final FeedRepository feedRepository;
 
     public FeedGood like(Long feedId, LoginUser loginUser) {
-        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException());
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시물입니다."));
         FeedGood feedGood = FeedGood.builder()
                 .feed(feed)
                 .user(loginUser.getUser())
@@ -37,32 +35,23 @@ public class FeedGoodService {
     }
 
     public void dislike(Long feedId, LoginUser loginUser){
-        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException());
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
         FeedGood find = feedGoodRepository.findByFeedAndUser(feed, loginUser.getUser());
 
         feedGoodRepository.delete(find);
     }
 
     public int countByFeedId(Long feedId){
-        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException());
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new IllegalArgumentException("존재하지 않는 게시물입니다."));
         return feedGoodRepository.countByFeed(feed);
     }
 
     public GoodUserResponse findUsers(Long feedId){
-        List<User> find = feedGoodRepository.findUserByFeedId(feedId);
-        GoodUserResponse goodUserResponse = new GoodUserResponse();
+        List<GoodUserResponse.UserDto> users = feedGoodRepository.findUserByFeedId(feedId, PageRequest.of(0, 30))
+                .stream()
+                .map(user -> new GoodUserResponse.UserDto(user))
+                .collect(Collectors.toList());
 
-        int size = find.size() > 30 ? 30 : find.size();
-        for(int i=0; i<size; i++){
-            User u = find.get(i);
-            goodUserResponse.getUsers().add(GoodUserResponse.UserDto.builder()
-                    .userId(u.getId())
-                    .userProfileImage(u.getProfileImgUrl())
-                    .username(u.getUsername())
-                    .nickname(u.getNickname())
-                    .build());
-        }
-
-        return goodUserResponse;
+        return new GoodUserResponse(users);
     }
 }
