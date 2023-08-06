@@ -22,7 +22,10 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.swing.text.DateFormatter;
 import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import lombok.RequiredArgsConstructor;
@@ -148,8 +151,7 @@ public class FeedService {
         List<FeedImage> feedImages = feedImageRepository.findAllByFeedId(feedId);
         feedImages.stream().forEach(feedImage ->
             {
-                int idx = feedImage.getFeedImgUrl().indexOf("static");
-                String url = feedImage.getFeedImgUrl().substring(idx);
+                String url = feedImage.getImgKey();
                 s3Uploader.delete(url);
             }
         );
@@ -173,8 +175,9 @@ public class FeedService {
 
         image.stream().forEach(file -> {
             try {
-                String url = s3Uploader.upload(file, "static");
-                FeedImage feedImage = FeedImage.builder().feedImgUrl(url).feed(feed).build();
+                String localDate = LocalDate.now().toString();
+                String[] url = s3Uploader.upload(file, localDate).split(" ");
+                FeedImage feedImage = FeedImage.builder().feedImgUrl(url[0]).imgKey(url[1]).feed(feed).build();
                 feedImageRepository.save(feedImage);
             } catch (IOException e) {
                 log.info("error", e);

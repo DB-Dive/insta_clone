@@ -5,9 +5,11 @@ import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.api.feed.dto.response.SelectViewResponse;
 import instagram.api.feed.service.FeedService;
 import instagram.config.auth.LoginUser;
+import instagram.entity.user.User;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -23,7 +25,6 @@ import static org.springframework.http.MediaType.*;
 public class FeedController {
 
     private final FeedService feedService;
-    private final UserRepository userRepository;
 
     @GetMapping(value = "/{feedId}")
     public SelectViewResponse selectView(@PathVariable Long feedId, @RequestParam int cmtPage, @RequestParam int cmtSize, @RequestParam Long userId) {
