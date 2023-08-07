@@ -4,6 +4,7 @@ import instagram.api.feed.dto.CommentDto;
 import instagram.api.feed.dto.FeedImageDto;
 import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.api.feed.dto.response.CommentsDto;
+import instagram.api.feed.dto.response.FeedDto;
 import instagram.api.feed.dto.response.SelectViewResponse;
 import instagram.api.feed.dto.response.TotalViewResponse;
 import instagram.config.s3.S3Uploader;
@@ -15,9 +16,7 @@ import instagram.repository.feed.*;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -108,53 +107,6 @@ public class FeedService {
                 .build();
     }
 
-    public TotalViewResponse totalView(Long userId) {
-//        List<FeedDto> followFeeds = new ArrayList<>();
-//        List<MiniFeedDto> followMiniFeeds = feedRepository.findFollowFeedsOneImg(userId);
-//        for (MiniFeedDto followFeed : followMiniFeeds) {
-//            boolean goodStatus = false;
-//            boolean bookmarkStatus = true;
-//
-//            List<StatusDto> goodStatusDto = feedRepository.goodStatus(userId);
-//            for (StatusDto statusDto : goodStatusDto) {
-//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
-//                    goodStatus = true;
-//                }
-//            }
-//            List<StatusDto> bookmarkStatusDto = feedRepository.bookmarkStatus(userId);
-//            for (StatusDto statusDto : bookmarkStatusDto) {
-//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
-//                    bookmarkStatus = true;
-//                }
-//            }
-//
-//            followFeeds.add(FeedDto.builder()
-//                    .userId(followFeed.getUserId())
-//                    .userProfileImage(followFeed.getUserProfileImage())
-//                    .username(followFeed.getUsername())
-//                    .feedId(followFeed.getFeedId())
-//                    .content(followFeed.getContent())
-//                    .createdAt(followFeed.getCreatedAt())
-//                    .feedImage(followFeed.getFeedImage())
-//                    .commentCnt(followFeed.getCommentCnt())
-//                    .goodCnt(followFeed.getGoodCnt())
-//                    .goodStatus(goodStatus)
-//                    .bookmarkStatus(bookmarkStatus)
-//                    .build());
-//        }
-//
-//        int totalPage = 0;
-//        int currentPage = 0;
-//
-//        return TotalViewResponse.builder()
-//                .feeds(followFeeds)
-//                .totalPage(totalPage)
-//                .currentPage(currentPage)
-//                .build();
-        return null;
-    }
-
-
     public String getFirstImgUrl(Long feedId){
         List<FeedImage> feedImages = feedImageRepository.findAllByFeedId(feedId);
         return feedImages.get(0).getFeedImgUrl();
@@ -227,5 +179,10 @@ public class FeedService {
                 throw new RuntimeException("업로드 실패");
             }
         });
+    }
+
+    public TotalViewResponse totalView(User user, Pageable pageable) {
+        PageImpl<FeedDto> feeds = feedRepository.findAllFeeds(user.getId(), pageable);
+        return new TotalViewResponse(feeds);
     }
 }
