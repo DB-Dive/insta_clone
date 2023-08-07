@@ -25,11 +25,11 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
     public PageImpl<FeedData> findFeedInfo(String username, Pageable pageable) {
         JPQLQuery<String> feedImageUrl = JPAExpressions.select(feedImage.feedImgUrl)
                 .from(feedImage)
-                .join(feedImage.feed, feed)
                 .where(feedImage.id.eq(JPAExpressions.select(
-                                feedImage.id.min()
-                        )
-                        .from(feedImage)
+                                        feedImage.id.min()
+                                )
+                                .from(feedImage)
+                                .where(feedImage.feed.eq(feed))
                 ));
         List<FeedData> feedData = jpaQueryFactory.select(Projections.constructor(FeedData.class,
                         feed.id,
