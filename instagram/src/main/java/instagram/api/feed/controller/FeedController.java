@@ -7,6 +7,7 @@ import instagram.api.feed.service.FeedService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -35,12 +36,12 @@ public class FeedController {
     }
 
     @PutMapping("/{feedId}")
-    public void edit(@PathVariable Long feedId, @RequestBody FeedEditRequest request, LoginUser loginUser){
+    public void edit(@PathVariable Long feedId, @RequestBody FeedEditRequest request, @AuthenticationPrincipal LoginUser loginUser){
         feedService.edit(feedId, request.getTags(), request.getContent(), loginUser.getUser());
     }
 
     @DeleteMapping("/{feedId}")
-    public void delete(@PathVariable Long feedId, LoginUser loginUser){
+    public void delete(@PathVariable Long feedId, @AuthenticationPrincipal LoginUser loginUser){
         feedService.delete(feedId, loginUser.getUser());
     }
 
@@ -48,7 +49,7 @@ public class FeedController {
     public void post(
             @RequestPart(value = "feedPostRequest") FeedPostRequest feedPostRequest,
             @RequestPart(value = "image") List<MultipartFile> image,
-            LoginUser loginUser
+            @AuthenticationPrincipal LoginUser loginUser
     ){
         feedService.post(feedPostRequest, image, loginUser.getUser());
     }
