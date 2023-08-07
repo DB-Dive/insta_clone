@@ -3,10 +3,12 @@ package instagram.api.feed.controller;
 import instagram.api.feed.dto.request.FeedEditRequest;
 import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.api.feed.dto.response.SelectViewResponse;
+import instagram.api.feed.dto.response.TotalViewResponse;
 import instagram.api.feed.service.FeedService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,10 +31,9 @@ public class FeedController {
         return feedService.selectView(feedId, cmtPage, cmtSize, userId);
     }
 
-    @GetMapping("/total")
-    public String totalView(@RequestParam Long userId) {
-        feedService.totalView(userId);
-        return "ha~";
+    @GetMapping
+    public TotalViewResponse totalView(@AuthenticationPrincipal LoginUser loginUser, Pageable pageable) {
+        return feedService.totalView(loginUser.getUser(), pageable);
     }
 
     @PutMapping("/{feedId}")

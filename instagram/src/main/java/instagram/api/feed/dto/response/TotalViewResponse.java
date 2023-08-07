@@ -1,31 +1,20 @@
 package instagram.api.feed.dto.response;
 
-import instagram.api.feed.dto.MiniFeedDto;
-import lombok.Builder;
 import lombok.Getter;
+import org.springframework.data.domain.PageImpl;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Getter
 public class TotalViewResponse {
-    private List<FeedDto> feeds = new ArrayList<>();
+    private List<FeedDto> feeds;
     private int totalPage;
     private int currentPage;
 
-    @Builder
-    public TotalViewResponse(List<FeedDto> feeds, int totalPage, int currentPage) {
-        this.feeds = feeds;
-        this.totalPage = totalPage;
-        this.currentPage = currentPage;
-    }
 
-    @Override
-    public String toString() {
-        return "TotalViewResponse{" +
-                "feeds=" + feeds +
-                ", totalPage=" + totalPage +
-                ", currentPage=" + currentPage +
-                '}';
+    public TotalViewResponse(PageImpl<FeedDto> feeds) {
+        this.feeds = feeds.getContent();
+        this.totalPage = feeds.getTotalPages();
+        this.currentPage = feeds.getNumber();
     }
 }

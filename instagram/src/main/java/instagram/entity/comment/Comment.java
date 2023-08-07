@@ -36,12 +36,14 @@ public class Comment {
     public void preUpdate() {
         this.modifiedAt = LocalDateTime.now();
     }
+
     public Comment(String content, Feed feed, User user) {
         this.content = content;
         this.feed = feed;
         this.user = user;
         this.createdAt = LocalDateTime.now();
     }
+
     public void updateComment(String content) {
         this.content = content;
     }
