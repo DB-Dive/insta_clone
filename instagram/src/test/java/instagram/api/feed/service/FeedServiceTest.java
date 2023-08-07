@@ -1,6 +1,5 @@
 package instagram.api.feed.service;
 
-import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.config.auth.LoginUser;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.Feed;
@@ -13,21 +12,17 @@ import instagram.repository.feed.FeedImageRepository;
 import instagram.repository.feed.FeedRepository;
 import instagram.repository.feed.HashTagRepository;
 import instagram.repository.user.UserRepository;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import static org.assertj.core.api.Assertions.*;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
 @Transactional

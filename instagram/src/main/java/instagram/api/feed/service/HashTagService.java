@@ -34,28 +34,4 @@ public class HashTagService {
                 .build();
     }
 
-    // 정신 나간 코드
-//    public HashTagResponse taggingFeedList(String tagName){
-//        List<Feed> feeds = feedHashTagRepository.findFeedByTagnameOrderByCreateAtDesc(tagName);
-//        List<HashTagResponse.Res> list = new ArrayList<>();
-//        int size = feeds.size() > 9 ? 9 : feeds.size();
-//        for (int i=0; i<size; i++) {
-//            Feed feed = feeds.get(i);
-//
-//            list.add(
-//                    HashTagResponse.Res.builder()
-//                            .id(feed.getId())
-//                            .feedImage(feedService.getFirstImgUrl(feed.getId()))
-//                            .goodCnt(feedGoodService.countByFeedId(feed.getId()))
-//                            .commentCnt(feedService.getCommentCount(feed.getId()))
-//                            .build()
-//            );
-//        }
-//
-//        return HashTagResponse.builder()
-//                .tagname(tagName)
-//                .feedCount(feeds.size())
-//                .feed(list)
-//                .build();
-//    }
 }

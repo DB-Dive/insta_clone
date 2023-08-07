@@ -1,40 +1,32 @@
 package instagram.api.feed.service;
 
 import instagram.api.feed.dto.CommentDto;
-import instagram.api.feed.dto.MiniFeedDto;
-import instagram.api.feed.dto.StatusDto;
-
+import instagram.api.feed.dto.FeedImageDto;
 import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.api.feed.dto.response.CommentsDto;
-import instagram.api.feed.dto.FeedImageDto;
-import instagram.api.feed.dto.response.FeedDto;
 import instagram.api.feed.dto.response.SelectViewResponse;
-
 import instagram.api.feed.dto.response.TotalViewResponse;
-import instagram.config.auth.LoginUser;
+import instagram.config.s3.S3Uploader;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.*;
 import instagram.entity.user.User;
 import instagram.repository.comment.CommentRepository;
 import instagram.repository.feed.*;
 import instagram.repository.user.UserRepository;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.swing.text.DateFormatter;
 import java.io.IOException;
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-
-import lombok.RequiredArgsConstructor;
-import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional

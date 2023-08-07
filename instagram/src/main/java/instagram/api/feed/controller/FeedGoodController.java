@@ -17,7 +17,6 @@ public class FeedGoodController {
 
     @PostMapping("/good/{feedId}")
     public FeedGoodResponse like(@PathVariable Long feedId, @AuthenticationPrincipal LoginUser loginUser){
-        System.out.println(loginUser.getUser().getId());
         feedGoodService.like(feedId, loginUser);
         return new FeedGoodResponse(feedGoodService.countByFeedId(feedId));
     }

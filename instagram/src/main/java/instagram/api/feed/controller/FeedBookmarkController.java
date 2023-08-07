@@ -1,18 +1,18 @@
 package instagram.api.feed.controller;
 
-import instagram.api.feed.dto.request.BookmarkDto;
 import instagram.api.feed.dto.BookmarkFeedDto;
+import instagram.api.feed.dto.request.BookmarkDto;
 import instagram.api.feed.service.FeedBookmarkService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+
 import java.util.List;
 
 @RestController
 @RequestMapping(value = "/api/feed/bookmarks")
+@RequiredArgsConstructor
 public class FeedBookmarkController {
-
-    @Autowired
-    FeedBookmarkService feedBookmarkService;
+    private final FeedBookmarkService feedBookmarkService;
 
     @PostMapping
     public void bookmark(@RequestBody BookmarkDto bookmarkDto) {

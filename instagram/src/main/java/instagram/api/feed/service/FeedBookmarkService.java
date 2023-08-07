@@ -33,11 +33,6 @@ public class FeedBookmarkService {
 
     @Transactional
     public void bookmark(BookmarkDto bookmarkDto) {
-//        Optional<Bookmark> fb = bookmarkRepository.findByFeedIdAndUserId(bookmarkDto.getFeedId(), bookmarkDto.getUserId());
-//
-//        if(fb.isPresent()) {
-//            throw new IllegalArgumentException("유니크");
-//        }
 
         Bookmark newBookmark = Bookmark.builder()
                 .feed(feedRepository.findById(bookmarkDto.getFeedId()).get())
