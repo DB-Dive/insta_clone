@@ -1,10 +1,14 @@
 package instagram.api.feed.service;
 
 import instagram.api.feed.dto.CommentDto;
+import instagram.api.feed.dto.MiniFeedDto;
+import instagram.api.feed.dto.StatusDto;
 import instagram.api.feed.dto.response.CommentsDto;
 import instagram.api.feed.dto.FeedImageDto;
+import instagram.api.feed.dto.response.FeedDto;
 import instagram.api.feed.dto.response.SelectViewResponse;
 
+import instagram.api.feed.dto.response.TotalViewResponse;
 import instagram.entity.comment.Comment;
 import instagram.entity.feed.*;
 import instagram.entity.user.User;
@@ -102,6 +106,52 @@ public class FeedService {
                 .goodStatus(goodStatus)
                 .bookmarkStatus(bookmarkStatus)
                 .build();
+    }
+
+    public TotalViewResponse totalView(Long userId) {
+//        List<FeedDto> followFeeds = new ArrayList<>();
+//        List<MiniFeedDto> followMiniFeeds = feedRepository.findFollowFeedsOneImg(userId);
+//        for (MiniFeedDto followFeed : followMiniFeeds) {
+//            boolean goodStatus = false;
+//            boolean bookmarkStatus = true;
+//
+//            List<StatusDto> goodStatusDto = feedRepository.goodStatus(userId);
+//            for (StatusDto statusDto : goodStatusDto) {
+//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
+//                    goodStatus = true;
+//                }
+//            }
+//            List<StatusDto> bookmarkStatusDto = feedRepository.bookmarkStatus(userId);
+//            for (StatusDto statusDto : bookmarkStatusDto) {
+//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
+//                    bookmarkStatus = true;
+//                }
+//            }
+//
+//            followFeeds.add(FeedDto.builder()
+//                    .userId(followFeed.getUserId())
+//                    .userProfileImage(followFeed.getUserProfileImage())
+//                    .username(followFeed.getUsername())
+//                    .feedId(followFeed.getFeedId())
+//                    .content(followFeed.getContent())
+//                    .createdAt(followFeed.getCreatedAt())
+//                    .feedImage(followFeed.getFeedImage())
+//                    .commentCnt(followFeed.getCommentCnt())
+//                    .goodCnt(followFeed.getGoodCnt())
+//                    .goodStatus(goodStatus)
+//                    .bookmarkStatus(bookmarkStatus)
+//                    .build());
+//        }
+//
+//        int totalPage = 0;
+//        int currentPage = 0;
+//
+//        return TotalViewResponse.builder()
+//                .feeds(followFeeds)
+//                .totalPage(totalPage)
+//                .currentPage(currentPage)
+//                .build();
+        return null;
     }
 
 

@@ -38,4 +38,11 @@ public class Feed {
     public void update(String updateContent){
         this.content = updateContent;
     }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "id=" + id +
+                '}';
+    }
 }

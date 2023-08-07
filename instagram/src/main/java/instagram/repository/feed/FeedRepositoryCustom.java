@@ -6,4 +6,5 @@ import org.springframework.data.domain.Pageable;
 
 public interface FeedRepositoryCustom {
     PageImpl<FeedData>  findFeedInfo(String username, Pageable pageable);
+
 }
