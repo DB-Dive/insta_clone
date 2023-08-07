@@ -1,22 +1,24 @@
 package instagram.api.feed.service;
 
 import instagram.api.feed.dto.CommentDto;
+import instagram.api.feed.dto.MiniFeedDto;
+import instagram.api.feed.dto.StatusDto;
+
+import instagram.api.feed.dto.request.FeedPostRequest;
 import instagram.api.feed.dto.response.CommentsDto;
 import instagram.api.feed.dto.FeedImageDto;
+import instagram.api.feed.dto.response.FeedDto;
 import instagram.api.feed.dto.response.SelectViewResponse;
 
+import instagram.api.feed.dto.response.TotalViewResponse;
+import instagram.config.auth.LoginUser;
 import instagram.entity.comment.Comment;
-import instagram.entity.feed.Bookmark;
-import instagram.entity.feed.Feed;
-import instagram.entity.feed.FeedGood;
-import instagram.entity.feed.FeedImage;
+import instagram.entity.feed.*;
 import instagram.entity.user.User;
 import instagram.repository.comment.CommentRepository;
-import instagram.repository.feed.BookmarkRepository;
-import instagram.repository.feed.FeedGoodRepository;
-import instagram.repository.feed.FeedImageRepository;
-import instagram.repository.feed.FeedRepository;
+import instagram.repository.feed.*;
 import instagram.repository.user.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -25,15 +27,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.ArrayList;
-import lombok.RequiredArgsConstructor;
+import javax.swing.text.DateFormatter;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
 
-import java.util.List;
-import java.util.Optional;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.multipart.MultipartFile;
 
 @Service
 @Transactional
 @RequiredArgsConstructor
+@Slf4j
 public class FeedService {
     
     private final FeedRepository feedRepository;
@@ -42,6 +48,8 @@ public class FeedService {
     private final CommentRepository commentRepository;
     private final FeedGoodRepository feedGoodRepository;
     private final BookmarkRepository bookmarkRepository;
+    private final HashTagRepository hashTagRepository;
+    private final S3Uploader s3Uploader;
 
     @PersistenceContext
     EntityManager em;
@@ -108,6 +116,52 @@ public class FeedService {
                 .build();
     }
 
+    public TotalViewResponse totalView(Long userId) {
+//        List<FeedDto> followFeeds = new ArrayList<>();
+//        List<MiniFeedDto> followMiniFeeds = feedRepository.findFollowFeedsOneImg(userId);
+//        for (MiniFeedDto followFeed : followMiniFeeds) {
+//            boolean goodStatus = false;
+//            boolean bookmarkStatus = true;
+//
+//            List<StatusDto> goodStatusDto = feedRepository.goodStatus(userId);
+//            for (StatusDto statusDto : goodStatusDto) {
+//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
+//                    goodStatus = true;
+//                }
+//            }
+//            List<StatusDto> bookmarkStatusDto = feedRepository.bookmarkStatus(userId);
+//            for (StatusDto statusDto : bookmarkStatusDto) {
+//                if(followFeed.getFeedId() == statusDto.getFeedId()) {
+//                    bookmarkStatus = true;
+//                }
+//            }
+//
+//            followFeeds.add(FeedDto.builder()
+//                    .userId(followFeed.getUserId())
+//                    .userProfileImage(followFeed.getUserProfileImage())
+//                    .username(followFeed.getUsername())
+//                    .feedId(followFeed.getFeedId())
+//                    .content(followFeed.getContent())
+//                    .createdAt(followFeed.getCreatedAt())
+//                    .feedImage(followFeed.getFeedImage())
+//                    .commentCnt(followFeed.getCommentCnt())
+//                    .goodCnt(followFeed.getGoodCnt())
+//                    .goodStatus(goodStatus)
+//                    .bookmarkStatus(bookmarkStatus)
+//                    .build());
+//        }
+//
+//        int totalPage = 0;
+//        int currentPage = 0;
+//
+//        return TotalViewResponse.builder()
+//                .feeds(followFeeds)
+//                .totalPage(totalPage)
+//                .currentPage(currentPage)
+//                .build();
+        return null;
+    }
+
 
     public String getFirstImgUrl(Long feedId){
         List<FeedImage> feedImages = feedImageRepository.findAllByFeedId(feedId);
@@ -116,5 +170,70 @@ public class FeedService {
 
     public int getCommentCount(Long feedId){
         return commentRepository.countByFeedId(feedId);
+    }
+
+    public void edit(Long feedId, List<String> tags, String content, User user) {
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시물입니다."));
+        if(feed.getId() != user.getId()){
+            new IllegalAccessException("잘못된 접근입니다.");
+        }
+
+        feed.update(content);
+        hashTagRepository.deleteAllByFeedId(feedId);
+        for (String tag : tags) {
+            HashTag hashTag = HashTag.builder().tagname(tag).feedId(feedId).build();
+            hashTagRepository.save(hashTag);
+        }
+    }
+
+    public void delete(Long feedId, User user) {
+        Feed feed = feedRepository.findById(feedId).orElseThrow(() -> new NoSuchElementException("존재하지 않는 게시물입니다."));
+        if(feed.getId() != user.getId()){
+            new IllegalAccessException("잘못된 접근입니다");
+        }
+        //해시태그
+        hashTagRepository.deleteAllByFeedId(feedId);
+        //댓글
+        commentRepository.deleteAllByFeedId(feedId);
+        //좋아요
+        feedGoodRepository.deleteAllByFeedId(feedId);
+        //피드 이미지
+        //S3 이미지 삭제
+        List<FeedImage> feedImages = feedImageRepository.findAllByFeedId(feedId);
+        feedImages.stream().forEach(feedImage ->
+            {
+                String url = feedImage.getImgKey();
+                s3Uploader.delete(url);
+            }
+        );
+        feedImageRepository.deleteAllByFeedId(feedId);
+        //게시물
+        feedRepository.deleteById(feedId);
+    }
+
+    public void post(FeedPostRequest request, List<MultipartFile> image, User user) {
+        Feed feed = Feed.builder()
+                .content(request.getContent())
+                .user(user)
+                .build();
+
+        feedRepository.save(feed);
+
+        Arrays.stream(request.getTag().split(" "))
+                .forEach(hash ->
+            hashTagRepository.save(HashTag.builder().tagname(hash).feedId(feed.getId()).build())
+        );
+
+        image.stream().forEach(file -> {
+            try {
+                String localDate = LocalDate.now().toString();
+                String[] url = s3Uploader.upload(file, localDate).split(" ");
+                FeedImage feedImage = FeedImage.builder().feedImgUrl(url[0]).imgKey(url[1]).feed(feed).build();
+                feedImageRepository.save(feedImage);
+            } catch (IOException e) {
+                log.info("error", e);
+                throw new RuntimeException("업로드 실패");
+            }
+        });
     }
 }

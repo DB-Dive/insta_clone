@@ -34,4 +34,15 @@ public class Feed {
         this.createdAt = LocalDateTime.now();
         this.user = user;
     }
+
+    public void update(String updateContent){
+        this.content = updateContent;
+    }
+
+    @Override
+    public String toString() {
+        return "Feed{" +
+                "id=" + id +
+                '}';
+    }
 }
