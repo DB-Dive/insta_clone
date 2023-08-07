@@ -1,9 +1,12 @@
 package instagram.api.user.controller;
 
-import instagram.api.user.dto.request.ProfileEditRequestDto;
-import instagram.api.user.dto.response.*;
 import instagram.api.user.dto.request.LoginRequestDto;
+import instagram.api.user.dto.request.ProfileEditRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
+import instagram.api.user.dto.response.FollowerResponse;
+import instagram.api.user.dto.response.FollowingResponse;
+import instagram.api.user.dto.response.LoginResponse;
+import instagram.api.user.dto.response.ProfileResponse;
 import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -11,8 +14,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 
 @RestController
 @RequiredArgsConstructor
@@ -60,9 +67,12 @@ public class UserController {
         return userService.getProfile(username, pageable);
     }
 
-    @PutMapping
-    public void editProfile(@AuthenticationPrincipal LoginUser loginUser, @RequestBody ProfileEditRequestDto profileEditRequestDto) {
-        userService.editProfile(loginUser, profileEditRequestDto);
+    @PutMapping(consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
+    public void editProfile(@AuthenticationPrincipal LoginUser loginUser,
+                            @RequestPart( value = "profileEditRequestDto")ProfileEditRequestDto profileEditRequestDto,
+                            @RequestParam(value = "userProfileImage")MultipartFile multipartFile)  {
+
+        userService.editProfile(loginUser, profileEditRequestDto,multipartFile);
     }
 }
 
