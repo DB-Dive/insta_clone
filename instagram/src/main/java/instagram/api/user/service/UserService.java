@@ -6,16 +6,21 @@ import instagram.api.user.dto.UserDto;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.ProfileEditRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
-import instagram.api.user.dto.response.*;
+import instagram.api.user.dto.response.FollowerResponse;
+import instagram.api.user.dto.response.FollowingResponse;
+import instagram.api.user.dto.response.LoginResponse;
+import instagram.api.user.dto.response.ProfileResponse;
 import instagram.common.GlobalException;
 import instagram.config.auth.LoginUser;
 import instagram.config.jwt.JwtUtils;
+import instagram.config.s3.S3Uploader;
 import instagram.entity.user.Follow;
 import instagram.entity.user.User;
 import instagram.repository.feed.FeedRepository;
 import instagram.repository.user.FollowRepository;
 import instagram.repository.user.UserRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -25,10 +30,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.persistence.EntityManager;
 import javax.persistence.TypedQuery;
-
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,8 +43,8 @@ import static instagram.entity.user.UserEnum.USER;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class UserService {
-
     private final UserRepository userRepository;
     private final FollowRepository followRepository;
     private final BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -47,7 +53,7 @@ public class UserService {
 
     private final EntityManager em;
     private final FeedRepository feedRepository;
-
+    private final S3Uploader s3Uploader;
 
     @Transactional
     public void signup(SignupRequestDto request) {
@@ -115,7 +121,7 @@ public class UserService {
         Long count = em.createQuery("select count(f) from Follow f where f.toUser.username=:username", Long.class)
                 .setParameter("username", username)
                 .getSingleResult();
-        PageImpl<UserDto> userDtos = new PageImpl<>(userDtoList, pageable,count);
+        PageImpl<UserDto> userDtos = new PageImpl<>(userDtoList, pageable, count);
         int totalPages = userDtos.getTotalPages();
         int currentPage = userDtos.getNumber();
         return new FollowerResponse(userDtoList, totalPages, currentPage);
@@ -127,7 +133,7 @@ public class UserService {
             throw new GlobalException("존재하지 않는 계정입니다.");
         }
         ProfileResponse response = userRepository.findByUsernameProfile(username);
-        PageImpl<FeedData> feeds =  feedRepository.findFeedInfo(username, pageable);
+        PageImpl<FeedData> feeds = feedRepository.findFeedInfo(username, pageable);
         response.setFeeds(feeds.getContent());
         response.setTotalPage(feeds.getTotalPages());
         response.setCurrentPage(feeds.getNumber());
@@ -135,17 +141,25 @@ public class UserService {
 
     }
     @Transactional
-    public void editProfile(LoginUser loginUser, ProfileEditRequestDto profileEditRequestDto) {
+    public void editProfile(LoginUser loginUser, ProfileEditRequestDto profileEditRequestDto, MultipartFile multipartFile) {
 
-        User user = userRepository.findById(loginUser.getUser().getId()).orElseThrow();
+        try {
+            User user = userRepository.findById(loginUser.getUser().getId()).orElseThrow();
 
-        user.setUsername(profileEditRequestDto.getUsername());
-        user.setNickname(profileEditRequestDto.getNickname());
-        user.setProfileImgUrl(profileEditRequestDto.getUserProfileImage());
-        user.setDescription(profileEditRequestDto.getDescription());
+            String localDate = LocalDate.now().toString();
+            String uploadImage = s3Uploader.upload(multipartFile, localDate);
 
-        userRepository.save(user);
-        System.out.println("user.getDescription() = " + user.getDescription());
+            user.setUsername(profileEditRequestDto.getUsername());
+            user.setNickname(profileEditRequestDto.getNickname());
+            user.setProfileImgUrl(uploadImage);
+            user.setDescription(profileEditRequestDto.getDescription());
+
+            userRepository.save(user);
+        } catch (Exception e) {
+            // 예외 처리 코드 추가
+            e.printStackTrace();
+            log.info("error", e);
+        }
     }
 
     private List<UserDto> userDtoListMapping(List<User> userList) {
