@@ -12,6 +12,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -128,7 +129,7 @@ class FeedGoodServiceTest {
     @Test
     @DisplayName("게시물을 좋아요 한 유저들 데려오기")
     void test4(){
-        List<User> find = feedGoodRepository.findUserByFeedId(2L);
+        List<User> find = feedGoodRepository.findUserByFeedId(2L, PageRequest.of(0, 30));
         for (User user : find) {
             System.out.println("user = " + user.getId());
         }

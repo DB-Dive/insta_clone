@@ -2,7 +2,6 @@ package instagram.api.search.controller;
 
 import instagram.api.search.response.OnlyTagResponse;
 import instagram.api.search.response.SearchResponse;
-import instagram.api.search.response.SearchTagResponse;
 import instagram.api.search.service.SearchService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;

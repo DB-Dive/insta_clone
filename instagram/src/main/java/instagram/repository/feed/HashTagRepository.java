@@ -51,8 +51,8 @@ public interface HashTagRepository extends JpaRepository<HashTag, Long> {
 
     @Query(value =
             "select new instagram.api.search.response.SearchTagResponse" +
-                    "(t.tagname, count(t))" +
-                    " from HashTag t where t.tagname like %:tagname% group by t.tagname"
+                    "(t.tagname, count(f))" +
+                    " from HashTag t join Feed f on t.feedId = f.id where t.tagname like %:tagname% group by t.tagname"
     )
     List<SearchTagResponse> findByKeyword(@Param("tagname") String keyword, Pageable pageable);
 }
