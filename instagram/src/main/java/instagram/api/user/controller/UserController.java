@@ -1,11 +1,9 @@
 package instagram.api.user.controller;
 
-import instagram.api.user.dto.response.FollowerResponse;
-import instagram.api.user.dto.response.FollowingResponse;
+import instagram.api.user.dto.request.ProfileEditRequestDto;
+import instagram.api.user.dto.response.*;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
-import instagram.api.user.dto.response.LoginResponse;
-import instagram.api.user.dto.response.ProfileResponse;
 import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -62,6 +60,10 @@ public class UserController {
         return userService.getProfile(username, pageable);
     }
 
+    @PutMapping
+    public void editProfile(@AuthenticationPrincipal LoginUser loginUser, @RequestBody ProfileEditRequestDto profileEditRequestDto) {
+        userService.editProfile(loginUser, profileEditRequestDto);
+    }
 }
 
 
