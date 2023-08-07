@@ -27,4 +27,12 @@ public class FeedImage {
         this.imgKey = imgKey;
         this.feed = feed;
     }
+
+    @Override
+    public String toString() {
+        return "FeedImage{" +
+                "id=" + id +
+                ", feedImgUrl='" + feedImgUrl + '\'' +
+                '}';
+    }
 }
