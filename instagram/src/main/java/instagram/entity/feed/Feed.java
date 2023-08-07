@@ -1,16 +1,12 @@
 package instagram.entity.feed;
 
-import instagram.entity.comment.Comment;
 import instagram.entity.user.User;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.AccessLevel;
+
 import javax.persistence.*;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Entity
 @Getter
@@ -35,14 +31,7 @@ public class Feed {
         this.user = user;
     }
 
-    public void update(String updateContent){
+    public void update(String updateContent) {
         this.content = updateContent;
-    }
-
-    @Override
-    public String toString() {
-        return "Feed{" +
-                "id=" + id +
-                '}';
     }
 }
