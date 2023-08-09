@@ -1,5 +1,6 @@
 package instagram.api.user.controller;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import instagram.api.user.dto.request.LoginRequestDto;
 import instagram.api.user.dto.request.ProfileEditRequestDto;
 import instagram.api.user.dto.request.SignupRequestDto;
@@ -7,6 +8,7 @@ import instagram.api.user.dto.response.FollowerResponse;
 import instagram.api.user.dto.response.FollowingResponse;
 import instagram.api.user.dto.response.LoginResponse;
 import instagram.api.user.dto.response.ProfileResponse;
+import instagram.api.user.service.KakoUserService;
 import instagram.api.user.service.UserService;
 import instagram.config.auth.LoginUser;
 import lombok.RequiredArgsConstructor;
@@ -27,6 +29,7 @@ import static org.springframework.http.MediaType.MULTIPART_FORM_DATA_VALUE;
 @Slf4j
 public class UserController {
     private final UserService userService;
+    private final KakoUserService kakaoUserService;
 
     @PostMapping("/signup")
     public void signup(@Valid @RequestBody SignupRequestDto signupRequestDto) {
@@ -57,6 +60,7 @@ public class UserController {
     public FollowingResponse getFollowings(@PathVariable String username, Pageable pageable) {
         return userService.getFollowings(username, pageable);
     }
+
     @GetMapping("/{username}/followers")
     public FollowerResponse getFollowers(@PathVariable String username, Pageable pageable) {
         return userService.getFollowers(username, pageable);
@@ -69,10 +73,15 @@ public class UserController {
 
     @PutMapping(consumes = {APPLICATION_JSON_VALUE, MULTIPART_FORM_DATA_VALUE})
     public void editProfile(@AuthenticationPrincipal LoginUser loginUser,
-                            @RequestPart( value = "profileEditRequestDto")ProfileEditRequestDto profileEditRequestDto,
-                            @RequestParam(value = "userProfileImage")MultipartFile multipartFile)  {
+                            @RequestPart(value = "profileEditRequestDto") ProfileEditRequestDto profileEditRequestDto,
+                            @RequestParam(value = "userProfileImage") MultipartFile multipartFile) {
 
-        userService.editProfile(loginUser, profileEditRequestDto,multipartFile);
+        userService.editProfile(loginUser, profileEditRequestDto, multipartFile);
+    }
+
+    @GetMapping("/login/oauth2/callback/kakao")
+    public LoginResponse kakaoLogin(@RequestParam("code") String code) throws JsonProcessingException {
+        return kakaoUserService.kakaoLogin(code);
     }
 }
 

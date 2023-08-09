@@ -7,12 +7,14 @@ import lombok.Getter;
 public class LoginResponse {
     private Long userId;
     private String email;
+    private String phoneNumber;
     private String username;
     private String accessToken;
 
     public LoginResponse(LoginUser loginUser, String accessToken) {
         this.userId = loginUser.getUser().getId();
         this.email = loginUser.getUser().getEmail();
+        this.phoneNumber = loginUser.getUser().getPhoneNumber();
         this.username = loginUser.getUser().getUsername();
         this.accessToken = accessToken;
     }
