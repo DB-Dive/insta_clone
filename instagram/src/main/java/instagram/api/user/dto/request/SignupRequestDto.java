@@ -10,8 +10,7 @@ import javax.validation.constraints.NotBlank;
 @Setter
 public class SignupRequestDto {
 
-    @Email
-    private String email;
+    private String id;
     @NotBlank
     private String password;
     @NotBlank
@@ -19,8 +18,8 @@ public class SignupRequestDto {
     @NotBlank
     private String nickname;
 
-    public SignupRequestDto(String email, String password, String username, String nickname) {
-        this.email = email;
+    public SignupRequestDto(String id, String password, String username, String nickname) {
+        this.id = id;
         this.password = password;
         this.username = username;
         this.nickname = nickname;

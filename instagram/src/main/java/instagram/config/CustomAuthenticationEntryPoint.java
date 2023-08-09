@@ -23,7 +23,7 @@ public class CustomAuthenticationEntryPoint implements AuthenticationEntryPoint 
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
         String loginException = authException.getClass().getSimpleName();
         if (loginException.equals(UsernameNotFoundException.class.getSimpleName())) {
-            setResponse(response, "존재하지 않는 이메일입니다.");
+            setResponse(response, "존재하지 않는 계정 입니다.");
         } else if (loginException.equals(BadCredentialsException.class.getSimpleName())) {
             setResponse(response, "비밀번호가 틀렸습니다.");
         }

@@ -80,6 +80,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
                 .where(bookmark.user.id.eq(userId), bookmark.feed.eq(feed));
         JPQLQuery<User> followingUser = JPAExpressions.select(follow.toUser)
                 .from(follow)
+                .join(follow.toUser, user)
                 .where(follow.fromUser.id.eq(userId));
 
         List<FeedDto> feeds = jpaQueryFactory.select(Projections.constructor(FeedDto.class,
@@ -98,7 +99,7 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
                 .join(feed.user, user)
                 .leftJoin(comment).on(feed.eq(comment.feed))
                 .leftJoin(feedGood).on(feed.eq(feedGood.feed))
-                .where(feed.user.in(followingUser))
+                .where(feed.user.in(followingUser).or(feed.user.id.eq(userId)))
                 .orderBy(feed.createdAt.desc())
                 .offset(pageable.getOffset())
                 .limit(pageable.getPageSize())
@@ -131,8 +132,6 @@ public class FeedRepositoryImpl implements FeedRepositoryCustom {
                 )
                 .from(feed)
                 .join(feed.user, user)
-                .leftJoin(comment).on(feed.eq(comment.feed))
-                .leftJoin(feedGood).on(feed.eq(feedGood.feed))
                 .where(feed.user.in(followingUser))
                 .fetchOne();
 

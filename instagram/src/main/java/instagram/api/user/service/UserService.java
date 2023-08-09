@@ -57,15 +57,27 @@ public class UserService {
 
     @Transactional
     public void signup(SignupRequestDto request) {
-        if (userRepository.existsByEmail(request.getEmail())) {
-            throw new GlobalException("존재하는 이메일 입니다.");
+        if (userRepository.existsByEmailOrPhoneNumber(request.getId(), request.getId())) {
+            throw new GlobalException("존재하는 계정 입니다.");
         }
         if (userRepository.existsByUsername(request.getUsername())) {
-            throw new GlobalException("존재하는 아이디 입니다.");
+            throw new GlobalException("존재하는 이름 입니다.");
+        }
+
+        String id = request.getId();
+        String email = "";
+        String phoneNumber = "";
+        if (id.contains("@")) {
+            email = id;
+        } else if (id.matches("[0-9]{10,}")) {
+            phoneNumber = id;
+        } else {
+            throw new GlobalException("이메일 또는 전화번호 형식이어야 합니다.");
         }
 
         User user = User.builder()
-                .email(request.getEmail())
+                .email(email)
+                .phoneNumber(phoneNumber)
                 .password(bCryptPasswordEncoder.encode(request.getPassword()))
                 .nickname(request.getNickname())
                 .username(request.getUsername())
@@ -76,7 +88,7 @@ public class UserService {
 
     @Transactional
     public LoginResponse login(LoginRequestDto request) {
-        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(request.getEmail(), request.getPassword()); // 인증정보
+        UsernamePasswordAuthenticationToken authRequest = new UsernamePasswordAuthenticationToken(request.getId(), request.getPassword()); // 인증정보
         Authentication authentication = authenticationManager.authenticate(authRequest); // 인증
         SecurityContextHolder.getContext().setAuthentication(authentication); // 인증정보를 SecurityContextHolder 넣는다.
         // accessToken 만들기
@@ -140,6 +152,7 @@ public class UserService {
         return response;
 
     }
+
     @Transactional
     public void editProfile(LoginUser loginUser, ProfileEditRequestDto profileEditRequestDto, MultipartFile multipartFile) {
 

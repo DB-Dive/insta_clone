@@ -22,4 +22,8 @@ public interface UserRepository extends JpaRepository<User, Long>, UserRepositor
                     " from User u where u.nickname like %:keyword% or u.username like %:keyword%"
     )
     List<SearchUserResponse> findByNickname(@Param("keyword") String keyword, Pageable pageable);
+
+    Optional<User> findByEmailOrUsernameOrPhoneNumber(String email, String username, String phoneNumber);
+
+    boolean existsByEmailOrPhoneNumber(String email, String phoneNumber);
 }

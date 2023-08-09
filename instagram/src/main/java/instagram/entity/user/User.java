@@ -21,6 +21,7 @@ public class User {
     private String email;
     @Column(unique = true)
     private String username;
+    private String phoneNumber;
     private String nickname;
     private String password;
     private String description;
@@ -31,9 +32,10 @@ public class User {
     private LocalDateTime createdAt;
 
     @Builder
-    public User(Long id, String username, String nickname, String email, String password, UserEnum role) {
+    public User(Long id, String username,String phoneNumber, String nickname, String email, String password, UserEnum role) {
         this.id = id;
         this.username = username;
+        this.phoneNumber = phoneNumber;
         this.nickname = nickname;
         this.email = email;
         this.password = password;
